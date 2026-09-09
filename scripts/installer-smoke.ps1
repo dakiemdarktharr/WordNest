@@ -3,7 +3,8 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $installRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot 'outputs\installer-smoke'))
 $outputRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot 'outputs')) + '\'
 if (-not $installRoot.StartsWith($outputRoot, [StringComparison]::OrdinalIgnoreCase)) { throw 'Test install path is outside workspace outputs.' }
-$existing = Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' | Where-Object { (Get-ItemProperty $_.PSPath).DisplayName -eq 'WordNest' }
+$uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
+$existing = if (Test-Path -LiteralPath $uninstallKey) { Get-ChildItem -LiteralPath $uninstallKey | Where-Object { (Get-ItemProperty $_.PSPath).DisplayName -eq 'WordNest' } } else { @() }
 if ($existing) { throw 'WordNest is already installed. Refusing to replace an existing user installation for testing.' }
 $setup = Join-Path $repoRoot 'release\WordNest-Setup-0.2.0-x64.exe'
 $installer = Start-Process -FilePath $setup -ArgumentList "/S /currentuser /D=$installRoot" -WindowStyle Hidden -PassThru -Wait
