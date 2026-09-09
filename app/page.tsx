@@ -86,6 +86,10 @@ export default function Home() {
   useEffect(() => {
     latest.current = data;
   }, [data]);
+  useEffect(
+    () => window.wordnestDesktop?.onImport(() => setImportOpen(true)),
+    [],
+  );
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 60000);
@@ -287,7 +291,7 @@ export default function Home() {
       <header className="topbar">
         <button className="brand" onClick={goHome}>
           <span className="brand-mark">
-            <Layers size={23} />
+            <img src="./wordnest-icon.png" width="30" height="30" alt="" />
           </span>
           word<span className="brand-light">nest</span>
           <span className="beta">HỌC THEO CÁCH CỦA BẠN</span>

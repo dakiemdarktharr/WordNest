@@ -66,6 +66,21 @@ export function Speak({
 }) {
   const [error, setError] = useState('');
   function speak() {
+    if (window.wordnestDesktop) {
+      setError('');
+      void window.wordnestDesktop
+        .speak(text)
+        .then((result) => {
+          if (!result.ok)
+            setError(
+              result.error === 'invalid-text'
+                ? 'Chỉ đọc tối đa 500 ký tự mỗi lần.'
+                : 'Chưa phát được âm thanh. Kiểm tra loa và giọng tiếng Anh của Windows.',
+            );
+        })
+        .catch(() => setError('Không kết nối được chức năng phát âm Windows.'));
+      return;
+    }
     if (!('speechSynthesis' in window)) {
       setError('Trình duyệt chưa hỗ trợ đọc phát âm.');
       return;

@@ -38,3 +38,9 @@ next-env.d.ts
 /work/
 
 *.tsbuildinfo
+
+# Desktop build artifacts
+/desktop-app/
+/release/
+/test-results/
+/playwright-report/

@@ -2,7 +2,18 @@
 
 Ứng dụng học từ vựng tiếng Anh từ file TXT, lấy cảm hứng từ Quizizz, Quizlet và Kahoot!. Dành cho học viên tự học độc lập: giáo viên gửi file qua kênh riêng, học viên nhập vào app.
 
-**Không cần tài khoản hay backend.** TXT được đọc trong trình duyệt; bộ từ, lịch ôn và kết quả lưu ở localStorage trên thiết bị.
+**Bản chính là ứng dụng desktop Windows 10/11 (64-bit).** Không cần tài khoản, Node.js hoặc kết nối mạng để nhập TXT và học. Bộ từ, lịch ôn và kết quả lưu trong hồ sơ riêng của WordNest trên máy.
+
+## Cài đặt Windows
+
+1. Tải **WordNest-Setup-0.2.0-x64.exe** từ [GitHub Releases](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.0) hoặc file giáo viên gửi. Repo hiện riêng tư: học viên không có quyền repo cần nhận file EXE qua kênh khác.
+2. Mở bộ cài, chọn thư mục và cài cho tài khoản Windows hiện tại. Không cần quyền quản trị.
+3. Mở **WordNest** từ Desktop hoặc Start Menu. Nhấn **Ctrl+O** để nhập TXT.
+4. Gỡ qua **Settings → Apps → WordNest → Uninstall**. Hồ sơ học được giữ lại để cài lại không mất tiến độ.
+
+Bộ cài chưa ký chứng chỉ nhà phát hành, nên Windows có thể hiện cảnh báo SmartScreen. Chỉ dùng file từ nguồn giáo viên cung cấp và có thể đối chiếu SHA-256 trong release. Bản mới được cài thủ công bằng bộ cài mới; app chưa tự cập nhật.
+
+Dữ liệu desktop nằm ở **%APPDATA%\WordNest** (Chromium localStorage). Không sửa file nội bộ trực tiếp; dùng **Xuất sao lưu** / **Nhập sao lưu**. Để chuyển từ bản web cũ, xuất JSON trên web rồi nhập JSON vào desktop.
 
 ## Sử dụng
 
@@ -67,40 +78,42 @@ Lịch ôn là thuật toán xác định đơn giản: thẻ mới được h�
 
 ## Lưu trữ
 
-- Bộ từ và các câu trả lời đã xác nhận được lưu trên trình duyệt. Bài kiểm tra có thể tiếp tục sau khi tải lại.
+- Bộ từ và các câu trả lời đã xác nhận được lưu trong hồ sơ thiết bị. Bài kiểm tra có thể tiếp tục sau khi tải lại.
 - Đồng hồ bài kiểm tra tiếp tục chạy khi đóng trang; khi quay lại sau hạn, bài được nộp.
 - Thống kê đếm các lượt đã nộp, không phải điểm của toàn lớp. Lịch sử từng phiên giữ tối đa 30 lượt; tổng số lần đúng/sai theo từ được tích lũy riêng.
 - Ghép cặp và duyệt thẻ là hoạt động luyện nhớ, không cộng vào điểm quiz.
 - Flashcard được coi là đã nhớ khi lịch ôn đã giãn tới ít nhất một ngày; đây là tự đánh giá.
-- Trình duyệt có giới hạn lưu trữ. Khi ghi thất bại, app báo rõ và không báo lưu thành công.
+- Kho dữ liệu cục bộ có giới hạn lưu trữ. Khi ghi thất bại, app báo rõ và không báo lưu thành công.
 - Xóa dữ liệu trang, dùng cửa sổ riêng tư, đổi thiết bị hoặc đổi địa chỉ hosting có thể làm mất quyền truy cập dữ liệu cũ. Xuất JSON trước khi di chuyển.
 - Nhập JSON có xác nhận vì sẽ thay thế dữ liệu hiện tại. TXT trùng nội dung được mở lại để giữ tiến độ.
 - Chỉnh sửa nội dung bằng trình soạn TXT rồi nhập thành bộ mới; xuất TXT không chứa tiến độ.
 
-## Chạy trên máy
+## Phát triển và tạo installer
 
-Cài Node.js 24 LTS và npm, sau đó:
+Cần Node.js 24 và npm. Trên Windows:
 
 ~~~bash
 npm ci
-npm run dev
+npm run desktop
 ~~~
 
-Mở địa chỉ được in ở terminal, mặc định http://127.0.0.1:3000.
+Tạo bộ cài và kiểm thử file chạy:
 
 ~~~bash
 npm test
+npm run test:security
 npm run lint
-npm run typecheck
-npm run build
-npm start
+npm run desktop:dist
+npm run test:desktop
 ~~~
 
-Bản production nằm trong **dist/**. Bản này dùng được trên dịch vụ hosting tĩnh; không cần biến môi trường hay API key. Đường dẫn tài nguyên tương đối hỗ trợ triển khai trong thư mục con. Dùng máy chủ HTTP để chạy, không mở index.html bằng giao thức file://.
+Bộ cài xuất vào **release/WordNest-Setup-0.2.0-x64.exe**; file chạy đã đóng gói tại **release/win-unpacked/WordNest.exe**. Lệnh build cần mạng để tải dependency và runtime Electron; app đã cài không cần các dependency bên ngoài. **npm run icon:build** chuyển icon nguồn thành PNG và ICO nhiều kích thước.
 
-**Cách đưa cho học viên:** đưa thư mục dist lên hosting tĩnh, gửi đường dẫn app một lần; gửi các file TXT qua kênh quen dùng. Repo GitHub riêng tư lưu mã nguồn, tự nó không phải đường dẫn chạy app công khai. Bản Sites riêng tư, nếu được tạo, chỉ dành cho chủ sở hữu xem thử.
+Electron chỉ phục vụ tài nguyên đóng gói qua origin ổn định **wordnest://app/**. Renderer có sandbox, context isolation, không có Node.js; chặn điều hướng và kết nối Internet. TXT không được thực thi như HTML hoặc mã. File xuất dùng hộp thoại lưu của Windows.
 
-App không đăng ký service worker hoặc cam kết hoạt động ngoại tuyến sau khi đóng trình duyệt. Phát âm dùng Web Speech API; giọng và khả năng đọc ngoại tuyến tùy thiết bị.
+Bản desktop phát âm ngoại tuyến qua System.Speech và giọng tiếng Anh cài sẵn của Windows, tối đa 500 ký tự mỗi lần. Nếu máy chưa có giọng tiếng Anh hoặc bị chính sách máy trường chặn PowerShell, app sẽ báo rõ. Bản web dùng Web Speech API. Việc nhập TXT, flashcard, quiz, ghép cặp và sao lưu đều hoạt động offline.
+
+Có thể tiếp tục phát triển giao diện qua **npm run dev** và tạo bản web bằng **npm run build**. Bản web cần máy chủ HTTP và không có service worker; giới hạn này không áp dụng cho bản desktop đóng gói.
 
 ## Cấu trúc mã
 
@@ -112,13 +125,15 @@ App không đăng ký service worker hoặc cam kết hoạt động ngoại tuy
 - tests/learning.test.ts: các kiểm thử logic và ranh giới dữ liệu.
 - docs/RESEARCH.vi.md: nghiên cứu nguồn chính thức và quyết định tính năng.
 
-Bản dựng cuối dùng React + TypeScript + Vite thuần trình duyệt. Phần máy chủ của scaffold đã được bỏ vì không cần cho yêu cầu này và bước kết thúc prerender gặp lỗi trên Windows.
+Giao diện dùng React + TypeScript + Vite, vỏ desktop dùng Electron. Thư mục desktop/ chứa main process, preload giới hạn và bộ xử lý tài nguyên; electron-builder.config.mjs cấu hình NSIS. scripts/desktop-smoke.mjs kiểm thử trực tiếp app đã đóng gói.
 
 ## Kiểm tra và giới hạn
 
 Đã kiểm tra mẫu đầu vào ban đầu, BOM/CRLF, dấu sao có escape, nhiều đáp án đúng, dữ liệu không hợp lệ, giới hạn câu, phương án nhiễu, chấm gõ, lịch ôn, bản sao lưu và xung đột ghi giữa các tab. CI chạy test, lint, TypeScript và production build.
 
-Chưa có kiểm thử tương tác trên trình duyệt hoặc thiết bị di động thực. WebMCP là phần hỗ trợ tùy chọn, tự phát hiện API; chưa xác minh trên trình duyệt có hỗ trợ. Hai công cụ chỉ đọc danh sách bộ từ hoặc mở hộp thoại nhập, không tự xuất dữ liệu ra bên ngoài.
+Kiểm thử desktop dùng Playwright để mở app đã đóng gói, nhập TXT, chấm đáp án, mở lại hồ sơ, lật thẻ và xuất sao lưu. Chưa kiểm chứng trên mọi cấu hình Windows hoặc thiết bị di động. WebMCP là phần hỗ trợ tùy chọn, tự phát hiện API; chưa xác minh trên trình duyệt có hỗ trợ. Hai công cụ chỉ đọc danh sách bộ từ hoặc mở hộp thoại nhập, không tự xuất dữ liệu ra bên ngoài.
 
 Tài liệu tham khảo và phân tích tính năng: [Nghiên cứu Quizizz, Quizlet, Kahoot!](docs/RESEARCH.vi.md). WordNest dùng tên và giao diện riêng, không liên kết với các sản phẩm tham khảo.
 
+
+Nguồn kỹ thuật desktop: [Electron security](https://www.electronjs.org/docs/latest/tutorial/security), [Electron custom protocol](https://www.electronjs.org/docs/latest/api/protocol), [NSIS installer](https://www.electron.build/nsis/), [Microsoft SpeechSynthesizer](https://learn.microsoft.com/en-us/dotnet/api/system.speech.synthesis.speechsynthesizer?view=netframework-4.8.1).

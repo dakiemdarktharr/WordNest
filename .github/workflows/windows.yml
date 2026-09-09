@@ -1,0 +1,44 @@
+name: Build Windows installer
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/wordnest]
+    paths:
+      - 'desktop/**'
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'build-resources/**'
+      - 'package*.json'
+      - 'electron-builder.config.mjs'
+      - '.github/workflows/windows.yml'
+permissions:
+  contents: read
+jobs:
+  installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run test:security
+      - run: npm run desktop:dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - run: ./scripts/installer-smoke.ps1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: WordNest-Windows-x64
+          path: release/WordNest-Setup-*-x64.exe
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: desktop-test-evidence
+          path: outputs/desktop-smoke-*/
+          retention-days: 7
