@@ -6,7 +6,9 @@ if (-not $installRoot.StartsWith($outputRoot, [StringComparison]::OrdinalIgnoreC
 $uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall'
 $existing = if (Test-Path -LiteralPath $uninstallKey) { Get-ChildItem -LiteralPath $uninstallKey | Where-Object { (Get-ItemProperty $_.PSPath).DisplayName -eq 'WordNest' } } else { @() }
 if ($existing) { throw 'WordNest is already installed. Refusing to replace an existing user installation for testing.' }
-$setup = Join-Path $repoRoot 'release\WordNest-Setup-0.2.0-x64.exe'
+$package = Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json
+$setup = Join-Path $repoRoot ('release\WordNest-Setup-' + $package.version + '-x64.exe')
+if (-not (Test-Path -LiteralPath $setup -PathType Leaf)) { throw "Installer for version $($package.version) not found. Run npm run desktop:dist first." }
 $installer = Start-Process -FilePath $setup -ArgumentList "/S /currentuser /D=$installRoot" -WindowStyle Hidden -PassThru -Wait
 if ($installer.ExitCode -ne 0) { throw "Installer failed: $($installer.ExitCode)" }
 $installedExe = Join-Path $installRoot 'WordNest.exe'

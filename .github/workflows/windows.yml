@@ -8,10 +8,32 @@ on:
       - 'app/**'
       - 'components/**'
       - 'lib/**'
+      - 'hooks/**'
       - 'public/**'
       - 'scripts/**'
+      - 'tests/**'
       - 'build-resources/**'
       - 'package*.json'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
+      - 'electron-builder.config.mjs'
+      - '.github/workflows/windows.yml'
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'hooks/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'build-resources/**'
+      - 'package*.json'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
       - 'electron-builder.config.mjs'
       - '.github/workflows/windows.yml'
 permissions:
@@ -19,6 +41,7 @@ permissions:
 jobs:
   installer:
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -40,5 +63,7 @@ jobs:
         if: always()
         with:
           name: desktop-test-evidence
-          path: outputs/desktop-smoke-*/
+          path: |
+            outputs/desktop-smoke-*/
+            outputs/installer-result.json
           retention-days: 7
