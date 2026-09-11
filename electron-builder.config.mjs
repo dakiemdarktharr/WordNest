@@ -1,3 +1,7 @@
+import { fileURLToPath } from 'node:url';
+const macEntitlements = fileURLToPath(
+  new URL('./build-resources/entitlements.mac.plist', import.meta.url),
+);
 /** @type {import('electron-builder').Configuration} */
 const config = {
   electronVersion: '44.3.0',
@@ -21,8 +25,8 @@ const config = {
   mac: {
     identity: '-',
     hardenedRuntime: true,
-    entitlements: '../build-resources/entitlements.mac.plist',
-    entitlementsInherit: '../build-resources/entitlements.mac.plist',
+    entitlements: macEntitlements,
+    entitlementsInherit: macEntitlements,
     target: ['dmg', 'zip'],
     icon: '../build-resources/icon.png',
     category: 'public.app-category.education',
