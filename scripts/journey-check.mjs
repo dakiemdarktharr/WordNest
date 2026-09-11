@@ -279,9 +279,14 @@ try {
       'Mac closing a window keeps the app available and Dock activation restores data',
       async () => {
         const closed = page.waitForEvent('close');
-        await app.evaluate(({ BrowserWindow }) =>
-          BrowserWindow.getAllWindows()[0].close(),
-        );
+        // Renderer page close can precede native BrowserWindow destruction on macOS.
+        await app.evaluate(async ({ BrowserWindow }) => {
+          const window = BrowserWindow.getAllWindows()[0];
+          await new Promise((resolve) => {
+            window.once('closed', resolve);
+            window.close();
+          });
+        });
         await closed;
         expect(
           await app.evaluate(
