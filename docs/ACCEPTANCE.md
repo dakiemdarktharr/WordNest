@@ -1,3 +1,14 @@
+# WordNest 0.3.0 acceptance — 2026-09-11
+
+- Added manual vocabulary-deck creation, persistent light/dark themes, and a resumable retry-until-correct mode with first-attempt scoring/SRS.
+- Commands: `npm test`, `npm run test:security`, `npm run lint`, `npm run build`, `npm run desktop:dist`, `./scripts/installer-smoke.ps1`, `npm run test:journey`; native Mac CI runs `npm run desktop:dist:mac -- --arm64` / `--x64` and `npm run test:mac` on freshly downloaded artifacts.
+- Results: 43 unit/desktop tests; 14 web groups; 11 Windows groups plus installation, shortcuts, speech and uninstall; 16 groups in each of the four Mac DMG/ZIP packages. Source and artifact hashes are in [raw evidence](evidence/features-0.3.0.json).
+- Release workflow: https://github.com/dakiemdarktharr/quizziz_clone/actions/runs/34607539199 (successful after one ARM64 verification retry). The first attempt sampled native window state before destruction completed; no assertion was removed. The follow-up test waits for `BrowserWindow.closed`. Shipped app code is unchanged by this test-only fix.
+- Fixture evidence: a three-word manually created deck needed five answers to clear the queue; first-attempt score remained 2/3, and the initially wrong card retained a one-minute review. This is scripted validation, not learner-performance data.
+- Limits: local storage capacity, manual updates, no in-place deck editor, no Apple notarization; tested on CI Windows and macOS 15 native architectures, not every OS/device. Backups containing the new mode require app 0.3.0 or newer.
+
+---
+
 # WordNest 0.2.3 — Mac repair verification
 
 The 0.2.2 release skipped macOS code signing, and its CI only built packages. The user then reported "damaged and can't be opened". The release log explicitly contains "skipped macOS application code signing" for both architectures. Version 0.2.3 signs the complete bundle ad-hoc with hardened runtime, JIT and library-validation entitlements. It also replaces the Windows-only speech command on Mac and fixes native app menus and window activation.

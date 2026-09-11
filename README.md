@@ -188,6 +188,12 @@ Historical **0.2.2** measurements, taken on **2026-09-11**, Windows x64 build 26
 
 Microbenchmarks run in one Node process: five warm-ups, then 25 timed runs; input generation is excluded. They measure pure parser/scheduler functions, not file-picker, disk, UI, startup or full-quiz latency. Gzip sizes use Node's default `gzipSync` settings. The demo fixture and generated benchmark inputs are not a learner dataset. No retention improvement, adoption, model accuracy, or statistically significant educational effect has been measured.
 
+## Version 0.3.0 verification
+
+[Raw evidence and release package SHA-256](docs/evidence/features-0.3.0.json) records **37 logic/persistence + 6 Electron/speech tests**, **14 production web assertion groups**, **11 Windows installed-app groups**, and **16 groups per Mac package** (DMG and ZIP, on both ARM64 and Intel). The release workflow passed before publication. Mac ARM64 verification required one retry for a window-close timing race; a test-only follow-up now waits for the native close event. The app artifacts were unchanged during that retry.
+
+All future user-facing changes must keep shared renderer behavior working on Windows and macOS, add the relevant workflow checks to `scripts/feature-journey.mjs`, and pass the existing native package matrix before release. Platform-specific behavior belongs behind the Electron bridge. Build success alone is not evidence that an installed app works.
+
 ## Release and installation
 
 The source version in this branch is **0.3.0**. Build the verified local Windows installer with:

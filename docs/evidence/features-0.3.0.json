@@ -1,0 +1,265 @@
+{
+  "version": "0.3.0",
+  "appSourceCommit": "15daf3dc73c9d508e4a3ade5b0a09ac7ddd13aac",
+  "releaseURL": "https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0",
+  "publishedAt": "2026-09-11T14:10:54Z",
+  "workflow": "https://github.com/dakiemdarktharr/quizziz_clone/actions/runs/34607539199",
+  "unitTests": {
+    "learningAndPersistence": 37,
+    "desktopAndSpeech": 6
+  },
+  "web": {
+    "verifiedAt": "2026-09-11T13:58:23.587Z",
+    "platform": "152.0.4191.66",
+    "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+    "checks": [
+      "explicit offline behavior",
+      "invalid UTF-8 is rejected visibly",
+      "malformed TXT cannot be committed",
+      "imports four vocabulary pairs",
+      "flashcard schedules first review in one day",
+      "quiz grades 3/4 and updates the same review schedule",
+      "reload preserves completed quiz and review dates exactly",
+      "light/dark theme applies to app and dialogs and survives reload",
+      "create vocabulary manually validates rows and persists an additional deck",
+      "mastery shows each answer, persists feedback and repeats only wrong questions",
+      "corrupt storage shows recovery guidance and preserves original bytes",
+      "failed writes do not report a successful import",
+      "theme write failure is visible without blocking study",
+      "failed manual deck save keeps form contents and does not add a deck"
+    ],
+    "errors": [],
+    "readyMs": 1383,
+    "elapsedMs": 9488,
+    "score": {
+      "correct": 3,
+      "total": 4
+    },
+    "intervalsDays": {
+      "resilient": 2,
+      "curious": 0.0006944444444444445
+    }
+  },
+  "windows": {
+    "job": "https://github.com/dakiemdarktharr/quizziz_clone/actions/runs/34607539199/job/103289575215",
+    "journeyAssertionGroups": 11,
+    "installerShortcutsAndUninstall": "passed",
+    "nativeSpeech": "passed"
+  },
+  "mac": [
+    {
+      "verifiedAt": "2026-09-11T14:10:28.255Z",
+      "version": "0.3.0",
+      "arch": "arm64",
+      "checks": [
+        {
+          "name": "WordNest-0.3.0-arm64.dmg",
+          "sha256": "d54cec23ca1bc3c15e57e0d2dbeba6e68c7dca37c81b10a7aa747348ebbae52f",
+          "signature": "valid ad-hoc with hardened runtime",
+          "nativeArch": "arm64",
+          "journey": {
+            "verifiedAt": "2026-09-11T14:10:02.116Z",
+            "platform": "Electron darwin arm64",
+            "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+            "checks": [
+              "explicit offline behavior",
+              "invalid UTF-8 is rejected visibly",
+              "malformed TXT cannot be committed",
+              "imports four vocabulary pairs",
+              "flashcard schedules first review in one day",
+              "quiz grades 3/4 and updates the same review schedule",
+              "reload preserves completed quiz and review dates exactly",
+              "Mac native menu and renderer isolation",
+              "Mac native backup preserves the study library",
+              "Mac native speech produces valid PCM audio and rejects invalid input",
+              "Mac closing a window keeps the app available and Dock activation restores data",
+              "Mac quit and cold relaunch preserve quiz and review progress",
+              "light/dark theme applies to app and dialogs and survives reload",
+              "create vocabulary manually validates rows and persists an additional deck",
+              "mastery shows each answer, persists feedback and repeats only wrong questions",
+              "new features survive desktop quit and cold relaunch"
+            ],
+            "errors": [],
+            "readyMs": 3736,
+            "elapsedMs": 21871,
+            "score": {
+              "correct": 3,
+              "total": 4
+            },
+            "intervalsDays": {
+              "resilient": 2,
+              "curious": 0.0006944444444444445
+            }
+          }
+        },
+        {
+          "name": "WordNest-0.3.0-arm64.zip",
+          "sha256": "0e2504ce75680fa4d454055d61713c6b779f4f4d6a133f661c6019a0bd672861",
+          "signature": "valid ad-hoc with hardened runtime",
+          "nativeArch": "arm64",
+          "journey": {
+            "verifiedAt": "2026-09-11T14:10:24.679Z",
+            "platform": "Electron darwin arm64",
+            "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+            "checks": [
+              "explicit offline behavior",
+              "invalid UTF-8 is rejected visibly",
+              "malformed TXT cannot be committed",
+              "imports four vocabulary pairs",
+              "flashcard schedules first review in one day",
+              "quiz grades 3/4 and updates the same review schedule",
+              "reload preserves completed quiz and review dates exactly",
+              "Mac native menu and renderer isolation",
+              "Mac native backup preserves the study library",
+              "Mac native speech produces valid PCM audio and rejects invalid input",
+              "Mac closing a window keeps the app available and Dock activation restores data",
+              "Mac quit and cold relaunch preserve quiz and review progress",
+              "light/dark theme applies to app and dialogs and survives reload",
+              "create vocabulary manually validates rows and persists an additional deck",
+              "mastery shows each answer, persists feedback and repeats only wrong questions",
+              "new features survive desktop quit and cold relaunch"
+            ],
+            "errors": [],
+            "readyMs": 2047,
+            "elapsedMs": 14805,
+            "score": {
+              "correct": 3,
+              "total": 4
+            },
+            "intervalsDays": {
+              "resilient": 2,
+              "curious": 0.0006944444444444445
+            }
+          }
+        }
+      ],
+      "limitation": "Ad-hoc signature is valid, but Apple Developer ID/notarization and user Gatekeeper approval are not verified."
+    },
+    {
+      "verifiedAt": "2026-09-11T14:06:17.894Z",
+      "version": "0.3.0",
+      "arch": "x64",
+      "checks": [
+        {
+          "name": "WordNest-0.3.0-x64.dmg",
+          "sha256": "4be146a2833ad819d80a6041eae4087cfbb66250a7937195f443ee37cfdaa6a6",
+          "signature": "valid ad-hoc with hardened runtime",
+          "nativeArch": "x64",
+          "journey": {
+            "verifiedAt": "2026-09-11T14:05:58.751Z",
+            "platform": "Electron darwin x64",
+            "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+            "checks": [
+              "explicit offline behavior",
+              "invalid UTF-8 is rejected visibly",
+              "malformed TXT cannot be committed",
+              "imports four vocabulary pairs",
+              "flashcard schedules first review in one day",
+              "quiz grades 3/4 and updates the same review schedule",
+              "reload preserves completed quiz and review dates exactly",
+              "Mac native menu and renderer isolation",
+              "Mac native backup preserves the study library",
+              "Mac native speech produces valid PCM audio and rejects invalid input",
+              "Mac closing a window keeps the app available and Dock activation restores data",
+              "Mac quit and cold relaunch preserve quiz and review progress",
+              "light/dark theme applies to app and dialogs and survives reload",
+              "create vocabulary manually validates rows and persists an additional deck",
+              "mastery shows each answer, persists feedback and repeats only wrong questions",
+              "new features survive desktop quit and cold relaunch"
+            ],
+            "errors": [],
+            "readyMs": 2991,
+            "elapsedMs": 16199,
+            "score": {
+              "correct": 3,
+              "total": 4
+            },
+            "intervalsDays": {
+              "resilient": 2,
+              "curious": 0.0006944444444444445
+            }
+          }
+        },
+        {
+          "name": "WordNest-0.3.0-x64.zip",
+          "sha256": "2612e759d364549617b90b42097d31eadf7927a7c95bc1eb6203306a0ed0cc74",
+          "signature": "valid ad-hoc with hardened runtime",
+          "nativeArch": "x64",
+          "journey": {
+            "verifiedAt": "2026-09-11T14:06:16.399Z",
+            "platform": "Electron darwin x64",
+            "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+            "checks": [
+              "explicit offline behavior",
+              "invalid UTF-8 is rejected visibly",
+              "malformed TXT cannot be committed",
+              "imports four vocabulary pairs",
+              "flashcard schedules first review in one day",
+              "quiz grades 3/4 and updates the same review schedule",
+              "reload preserves completed quiz and review dates exactly",
+              "Mac native menu and renderer isolation",
+              "Mac native backup preserves the study library",
+              "Mac native speech produces valid PCM audio and rejects invalid input",
+              "Mac closing a window keeps the app available and Dock activation restores data",
+              "Mac quit and cold relaunch preserve quiz and review progress",
+              "light/dark theme applies to app and dialogs and survives reload",
+              "create vocabulary manually validates rows and persists an additional deck",
+              "mastery shows each answer, persists feedback and repeats only wrong questions",
+              "new features survive desktop quit and cold relaunch"
+            ],
+            "errors": [],
+            "readyMs": 1807,
+            "elapsedMs": 12440,
+            "score": {
+              "correct": 3,
+              "total": 4
+            },
+            "intervalsDays": {
+              "resilient": 2,
+              "curious": 0.0006944444444444445
+            }
+          }
+        }
+      ],
+      "limitation": "Ad-hoc signature is valid, but Apple Developer ID/notarization and user Gatekeeper approval are not verified."
+    }
+  ],
+  "assets": [
+    {
+      "name": "WordNest-0.3.0-arm64.dmg",
+      "size": 127989566,
+      "digest": "sha256:d54cec23ca1bc3c15e57e0d2dbeba6e68c7dca37c81b10a7aa747348ebbae52f",
+      "url": "https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.3.0/WordNest-0.3.0-arm64.dmg"
+    },
+    {
+      "name": "WordNest-0.3.0-arm64.zip",
+      "size": 127721350,
+      "digest": "sha256:0e2504ce75680fa4d454055d61713c6b779f4f4d6a133f661c6019a0bd672861",
+      "url": "https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.3.0/WordNest-0.3.0-arm64.zip"
+    },
+    {
+      "name": "WordNest-0.3.0-x64.dmg",
+      "size": 134022518,
+      "digest": "sha256:4be146a2833ad819d80a6041eae4087cfbb66250a7937195f443ee37cfdaa6a6",
+      "url": "https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.3.0/WordNest-0.3.0-x64.dmg"
+    },
+    {
+      "name": "WordNest-0.3.0-x64.zip",
+      "size": 133785663,
+      "digest": "sha256:2612e759d364549617b90b42097d31eadf7927a7c95bc1eb6203306a0ed0cc74",
+      "url": "https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.3.0/WordNest-0.3.0-x64.zip"
+    },
+    {
+      "name": "WordNest-Setup-0.3.0-x64.exe",
+      "size": 111639930,
+      "digest": "sha256:400cbf0c10a724e5b3c0d4f5d45226ad693428d835fb1a0e570b3078319ebcfe",
+      "url": "https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.3.0/WordNest-Setup-0.3.0-x64.exe"
+    }
+  ],
+  "verificationNote": "Release attempt 1 hit a timing race in the Mac ARM64 window-close assertion. The same app commit passed in an independent workflow and the failed verification passed on attempt 2, against unchanged artifacts. A test-only follow-up fa09b13 waits for native BrowserWindow.closed; it does not change shipped app code. No failed check was removed.",
+  "limitations": [
+    "Mac ad-hoc signature; no Developer ID/notarization or Gatekeeper approval test",
+    "CI virtual machines, not all user hardware or OS versions",
+    "Local JSON backups with mastery sessions require app 0.3.0 or newer"
+  ]
+}
