@@ -1709,8 +1709,8 @@ small {
   margin-right: 8px;
   margin-bottom: 8px;
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .topbar,
     .panel,
     .button:not(.primary):not(.danger-button),
@@ -1731,7 +1731,7 @@ small {
   color: var(--foreground);
   border-color: var(--line);
 }
-.dark :is(input, textarea, select) {
+:root.dark :where(input, textarea, select) {
   background: var(--surface);
   color: var(--foreground);
   border-color: var(--line);
@@ -1744,8 +1744,8 @@ small {
   background: var(--surface) !important;
   color: var(--foreground);
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .import-hero,
     .import-preview,
     .dropzone,
@@ -1764,8 +1764,8 @@ small {
   color: var(--foreground);
   border-color: var(--line);
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .muted,
     .beta,
     .local-badge,
@@ -1802,8 +1802,8 @@ small {
   ) {
   color: var(--muted-text);
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .text-button,
     .pill,
     .deck-link,
@@ -1813,8 +1813,8 @@ small {
   ) {
   color: var(--accent-text);
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .vocab-row,
     .review-row,
     .history-row,
@@ -1835,8 +1835,8 @@ small {
 .dark .main-tabs [data-active] {
   color: var(--accent-text) !important;
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .button:not(.primary):not(.danger-button):hover,
     .icon-button:hover,
     .new-deck-card:hover,
@@ -1849,8 +1849,8 @@ small {
   color: var(--foreground);
   border-color: #93a5ff;
 }
-.dark
-  :is(
+:root.dark
+  :where(
     .positive,
     .answer-option.correct,
     .match-tile.matched,
@@ -1861,22 +1861,22 @@ small {
   color: #9aebc4;
   border-color: #5cb798;
 }
-.dark :is(.negative, .error, .answer-option.incorrect) {
+:root.dark :where(.negative, .error, .answer-option.incorrect) {
   background: #482938;
   color: #ffbdc9;
   border-color: #df8c9e;
 }
-.dark :is(.correct-text, .success-line, .format-note, .rating-2) {
+:root.dark :where(.correct-text, .success-line, .format-note, .rating-2) {
   color: #9aebc4;
 }
-.dark :is(.wrong-text, .danger, .rating-0, .speech-error) {
+:root.dark :where(.wrong-text, .danger, .rating-0, .speech-error) {
   color: #ffbdc9;
 }
-.dark :is(.blue, .deck-icon) {
+:root.dark :where(.blue, .deck-icon) {
   background: #2c3a60;
   color: #b6c4ff;
 }
-.dark :is(.orange, .trophy, .theme-2 .deck-icon) {
+:root.dark :where(.orange, .trophy, .theme-2 .deck-icon) {
   background: #483822;
   color: #f3cd8c;
 }

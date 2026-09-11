@@ -116,6 +116,11 @@ export async function featureJourney(page, check, snapshot) {
     async () => {
       await answer('quả lê');
       await expect(page.locator('.feedback')).toContainText('Đáp án: quả táo');
+      expect(
+        await page
+          .locator('.answer-option.incorrect')
+          .evaluate((el) => getComputedStyle(el).backgroundColor),
+      ).toBe('rgb(72, 41, 56)');
       const pending = await stored();
       await resume();
       expect(await stored()).toEqual(pending);
@@ -135,6 +140,11 @@ export async function featureJourney(page, check, snapshot) {
       await expect(page.locator('.quiz-prompt')).toHaveText('apple');
       await expect(page.locator('.feedback')).not.toBeVisible();
       await answer('quả táo');
+      expect(
+        await page
+          .locator('.answer-option.correct')
+          .evaluate((el) => getComputedStyle(el).backgroundColor),
+      ).toBe('rgb(25, 62, 52)');
       await snapshot('07-mastery-dark');
       await page
         .getByRole('button', { name: 'Hoàn thành lượt học', exact: true })
