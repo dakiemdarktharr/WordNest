@@ -161,11 +161,11 @@ Measured on **2026-09-11**, Windows x64 build 26200, AMD Ryzen AI 5 340, Node.js
 | Production web journey | 9 assertion groups passed, including offline study and storage-error cases |
 | Electron journey | 7 assertion groups passed, including quiz-to-review scheduling and persisted reload |
 | Windows installer | Install, Desktop/Start Menu shortcuts, installed-app checks and uninstall passed locally |
-| Parse 1,000 synthetic vocabulary pairs (26,779 UTF-8 bytes) | p50 **0.206 ms**, p95 **0.569 ms** |
-| Schedule 1,000 review records | p50 **0.046 ms**, p95 **0.056 ms** |
+| Parse 1,000 synthetic vocabulary pairs (26,779 UTF-8 bytes) | p50 **0.129 ms**, p95 **0.478 ms** |
+| Schedule 1,000 review records | p50 **0.034 ms**, p95 **0.057 ms** |
 | Production JavaScript | **445,487 bytes**; gzip **143,128 bytes** |
-| Production CSS | **191,154 bytes**; gzip **31,393 bytes** |
-| Windows x64 installer | **111,636,777 bytes** (~106.47 MiB) |
+| Production CSS | **191,192 bytes**; gzip **31,407 bytes** |
+| Windows x64 installer | **111,636,932 bytes** (~106.47 MiB) |
 
 Microbenchmarks run in one Node process: five warm-ups, then 25 timed runs; input generation is excluded. They measure pure parser/scheduler functions, not file-picker, disk, UI, startup or full-quiz latency. Gzip sizes use Node's default `gzipSync` settings. The demo fixture and generated benchmark inputs are not a learner dataset. No retention improvement, adoption, model accuracy, or statistically significant educational effect has been measured.
 

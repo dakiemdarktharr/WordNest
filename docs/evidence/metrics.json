@@ -1,6 +1,6 @@
 {
-  "measuredAt": "2026-09-11T08:51:55.873Z",
-  "version": "0.2.1",
+  "measuredAt": "2026-09-11T10:00:30.892Z",
+  "version": "0.2.2",
   "environment": {
     "os": "win32",
     "release": "10.0.26200",
@@ -16,55 +16,55 @@
     "components/learning-environment.tsx",
     "package-lock.json"
   ],
-  "sourceSha256": "ed99dd60497fd713d0a2c2fe5bcae92a441b0dc882575e4d02731f9e90c57d25",
+  "sourceSha256": "1f2bd844611bc15ae92b87f5cf1d77fdff54e89c27c3f1d18e546d25eddec156",
   "parser": [
     {
       "pairs": 10,
       "inputBytes": 229,
       "runs": 25,
       "warmupRuns": 5,
-      "p50Ms": 0.005,
-      "p95Ms": 0.022
+      "p50Ms": 0.004,
+      "p95Ms": 0.026
     },
     {
       "pairs": 100,
       "inputBytes": 2479,
       "runs": 25,
       "warmupRuns": 5,
-      "p50Ms": 0.022,
-      "p95Ms": 0.035
+      "p50Ms": 0.028,
+      "p95Ms": 0.045
     },
     {
       "pairs": 1000,
       "inputBytes": 26779,
       "runs": 25,
       "warmupRuns": 5,
-      "p50Ms": 0.206,
-      "p95Ms": 0.569
+      "p50Ms": 0.129,
+      "p95Ms": 0.478
     }
   ],
   "scheduling": {
     "reviews": 1000,
     "runs": 25,
     "warmupRuns": 5,
-    "p50Ms": 0.046,
-    "p95Ms": 0.056
+    "p50Ms": 0.034,
+    "p95Ms": 0.057
   },
   "assets": [
     {
-      "name": "index-LmVZqjQY.js",
-      "bytes": 445487,
-      "gzipBytes": 143128
+      "name": "index-BI9DGpjj.css",
+      "bytes": 191192,
+      "gzipBytes": 31407
     },
     {
-      "name": "index-vJfey_hJ.css",
-      "bytes": 191154,
-      "gzipBytes": 31393
+      "name": "index-CTyewlaR.js",
+      "bytes": 445487,
+      "gzipBytes": 143128
     }
   ],
   "installer": {
-    "path": "release\\WordNest-Setup-0.2.1-x64.exe",
-    "bytes": 111636777,
-    "sha256": "74c892e9738acdb976935213ce95a2b0d8026edcd995f581e8f4957f67be9bf7"
+    "path": "release\\WordNest-Setup-0.2.2-x64.exe",
+    "bytes": 111636932,
+    "sha256": "627d9fec6cc1d3fa11d70fa9f77add68d076c3a20b3501d28a0d88c595fc31fd"
   }
 }
