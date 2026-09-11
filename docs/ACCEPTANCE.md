@@ -1,4 +1,24 @@
-# WordNest 0.2.2 — acceptance record
+# WordNest 0.2.3 — Mac repair verification
+
+The 0.2.2 release skipped macOS code signing, and its CI only built packages. The user then reported "damaged and can't be opened". The release log explicitly contains "skipped macOS application code signing" for both architectures. Version 0.2.3 signs the complete bundle ad-hoc with hardened runtime, JIT and library-validation entitlements. It also replaces the Windows-only speech command on Mac and fixes native app menus and window activation.
+
+Verified on macOS 15 Apple Silicon and Intel, with separate build and test runner machines:
+
+- DMG integrity check, mount, copy WordNest.app to a directory containing spaces, eject, then launch.
+- ZIP extraction and launch; exact architecture and app version checked.
+- Deep/strict signature verification before and after app use; JIT/library entitlements verified.
+- 12 journey assertion groups for each of the four packages: offline behavior, invalid UTF-8, malformed TXT, import, flashcard schedule, quiz scoring/schedule, reload, native menu/isolation, backup, native speech WAV, close/Dock activation, quit/cold restart.
+- 30 logic tests and 6 desktop security/speech tests passed. Lint and production web build passed. Windows installer smoke checks passed on GitHub.
+
+[Mac CI and raw evidence](evidence/macos-0.2.3.json) · [Mac workflow](https://github.com/dakiemdarktharr/quizziz_clone/actions/runs/34594420273) · [Windows regression](https://github.com/dakiemdarktharr/quizziz_clone/actions/runs/34594420311) · [Web validation](https://github.com/dakiemdarktharr/quizziz_clone/actions/runs/34594420500).
+
+Release packages are rebuilt and run through the same checks before publication. The evidence above identifies the pre-release CI artifacts, not the final release hashes.
+
+Limitations: ad-hoc signing is not Apple Developer ID signing or notarization. These tests do not simulate a user's Gatekeeper approval after a quarantined browser download, prove playback through physical speakers, or cover every macOS version/device. macOS can still request approval for an unverified developer. No Apple signing credentials were available in the repository. Install guidance distinguishes that warning from invalid/damaged code, without disabling system protections. A missing Samantha voice reports a visible speech error while study remains available.
+
+The measurements and earlier snapshots below are historical 0.2.2 evidence, not current package benchmarks.
+
+# Historical WordNest 0.2.2 acceptance record
 
 Verified locally and in GitHub Actions on 2026-09-11. The existing React/Vite/Electron app and data format were retained while adding cross-platform desktop packaging.
 

@@ -1,12 +1,12 @@
 # WordNest
 
-**An offline-first vocabulary study app with an intelligent, deterministic spaced-repetition workflow.** Import a teacher's TXT file, study flashcards, take a quiz, and keep the next review dates on your own device. The interface is in Vietnamese; the primary distribution is a Windows desktop app.
+**An offline-first vocabulary study app with an intelligent, deterministic spaced-repetition workflow.** Import a teacher's TXT file, study flashcards, take a quiz, and keep the next review dates on your own device. The interface is in Vietnamese; the primary distributions are Windows and macOS desktop apps.
 
 WordNest is an original product for an English teacher who distributes vocabulary files outside the app. Learners need a simple way to turn those files into practice without creating accounts, uploading their materials, or depending on classroom Wi-Fi. The existing React/Electron app is retained; this focused update connects quiz results to the review scheduler and makes the core workflow demonstrable.
 
 **No generative AI or model provider is used.** “Intelligent” refers to explicit scheduling rules, not an LLM, trained model, or measured prediction of memory. Operating-system text-to-speech and optional browser WebMCP hooks are not AI content-generation features.
 
-## Install the Windows desktop app
+## Install the desktop app
 
 **For learners: [download WordNest 0.2.3](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
@@ -56,7 +56,7 @@ No backend, API key, account, cloud synchronization, or external content service
 
 ## Development setup and run
 
-Prerequisites for development: **Node.js 24**, npm, and Git. Windows 10/11 x64 is the supported desktop target. Install dependencies once with internet access:
+Prerequisites for development: **Node.js 24**, npm, and Git. Desktop packages target Windows x64 and macOS Intel/Apple Silicon. Install dependencies once with internet access:
 
 ```powershell
 npm ci
@@ -77,7 +77,7 @@ npm run start -- --port 4173
 
 Open `http://127.0.0.1:4173/`. Serve `dist/` over HTTP; do not open its HTML directly with `file://`.
 
-Run the desktop app from source on Windows:
+Run the desktop app from source on Windows or macOS:
 
 ```powershell
 npm run desktop
@@ -108,7 +108,7 @@ See [TXT format](docs/TXT-FORMAT.md) for numbered multiple-choice questions, mul
 | Corrupt saved JSON | Recovery guidance is shown; existing bytes are preserved instead of silently replacing the library |
 | Another tab writes data | Further writes are blocked until reload to avoid silently overwriting another tab |
 | Invalid TXT/UTF-8 | Import errors are shown before creation; no partial deck is silently committed |
-| Speech unavailable | An error is shown; studying continues. Windows needs an installed English voice and permission to run PowerShell |
+| Speech unavailable | An error is shown; studying continues. Windows uses an installed English voice through PowerShell; macOS uses the installed Samantha voice through say |
 
 Desktop data lives under `%APPDATA%\WordNest`; web data belongs to its browser origin. Transfer between them using JSON export/import. Uninstalling the desktop app preserves the profile. Backups remain the user's responsibility.
 
@@ -148,7 +148,7 @@ npm run measure
 
 `installer-smoke.ps1` installs into an isolated `outputs/` directory, checks both shortcuts, runs the desktop checks and the complete study journey, then uninstalls the test copy. It refuses to replace an existing WordNest installation. Use the packaged-app checks when WordNest is already installed. Speech testing synthesizes a WAV rather than playing through the speakers.
 
-CI runs logic/security checks, type checking, lint, the production web journey, and a Windows installer journey. Generated profiles and binaries are ignored by Git. Screenshots/results are stored in `outputs/`; committed evidence is a dated snapshot, not a claim that future runs will have identical timing.
+CI runs logic/security checks, type checking, lint, the production web journey, a Windows installer journey, and Mac DMG/ZIP signature and native workflow checks on separate build/test machines for both architectures. Generated profiles and binaries are ignored by Git. Screenshots/results are stored in `outputs/`; committed evidence is a dated snapshot, not a claim that future runs will have identical timing.
 
 ## Measured evidence
 
@@ -217,4 +217,4 @@ Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with
 ## Two-line resume bullet
 
 - Developed WordNest, an offline-first vocabulary application using React, TypeScript and Electron, turning teacher-provided TXT files into flashcards and quizzes with local progress and JSON backup.
-- Implemented deterministic spaced-repetition updates and idempotent quiz completion; verified the core journey with 32 automated logic/security tests, browser/Electron checks, and Windows installer testing.
+- Implemented deterministic spaced-repetition updates and idempotent quiz completion; verified the core journey with 36 automated logic/security tests, browser/Electron checks, and Windows/macOS package testing.
