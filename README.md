@@ -8,9 +8,9 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 ## Install the Windows desktop app
 
-**For learners: [Download WordNest-Setup-0.2.1-x64.exe](https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.2.1/WordNest-Setup-0.2.1-x64.exe)**, run the installer, then open **WordNest** from Desktop or Start Menu. No Node.js, terminal, browser or localhost server is needed to use the installed app. Windows 10/11 x64 is the supported target; the installer is unsigned.
+**For learners: [download WordNest 0.2.2](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
-[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.1)
+[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2)
 
 ## See the workflow
 
@@ -171,20 +171,29 @@ Microbenchmarks run in one Node process: five warm-ups, then 25 timed runs; inpu
 
 ## Release and installation
 
-The source version in this branch is **0.2.1**. Build the verified local installer with:
+The source version in this branch is **0.2.2**. Build the verified local Windows installer with:
 
 ```powershell
 npm ci
 npm run desktop:dist
-& '.\release\WordNest-Setup-0.2.1-x64.exe'
-Get-FileHash '.\release\WordNest-Setup-0.2.1-x64.exe' -Algorithm SHA256
+& '.\release\WordNest-Setup-0.2.2-x64.exe'
+Get-FileHash '.\release\WordNest-Setup-0.2.2-x64.exe' -Algorithm SHA256
 ```
 
 Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.
 
-[GitHub Release v0.2.1](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.1) distributes the tested Windows installer, SHA256 checksum and demo TXT. The repository is currently public, so learners can download the installer directly. Choose the `.exe` asset; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
+The macOS packages are built on GitHub's macOS runners:
 
-The installer is **unsigned**, so Windows may show SmartScreen. Updates are manual. No macOS, Linux or Windows ARM64 installer has been verified. Installer hashes vary across independently produced packages; the committed hash identifies the measured local artifact only.
+```bash
+npm ci
+npm run desktop:dist:mac
+```
+
+This produces `.dmg` and `.zip` packages for Intel (`x64`) and Apple Silicon (`arm64`). A macOS machine is required for a local macOS build.
+
+[GitHub Release v0.2.2](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
+
+The Windows installer and macOS packages are **unsigned**, so Windows may show SmartScreen and macOS may require Privacy & Security → Open Anyway on first launch. Updates are manual. No Linux or Windows ARM64 package has been verified. Release checksums identify the published artifacts.
 
 ## Product and technical decisions
 

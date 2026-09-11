@@ -1,0 +1,74 @@
+name: Build macOS app
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/wordnest]
+    paths:
+      - 'desktop/**'
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'hooks/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'examples/**'
+      - 'build-resources/**'
+      - 'package*.json'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
+      - 'electron-builder.config.mjs'
+      - '.github/workflows/macos.yml'
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'hooks/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'examples/**'
+      - 'build-resources/**'
+      - 'package*.json'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
+      - 'electron-builder.config.mjs'
+      - '.github/workflows/macos.yml'
+permissions:
+  contents: read
+jobs:
+  app:
+    name: macOS ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-13
+            arch: x64
+          - runner: macos-14
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run test:security
+      - run: npx electron-builder --projectDir desktop-app --config electron-builder.config.mjs --mac dmg zip --${{ matrix.arch }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: WordNest-macOS-${{ matrix.arch }}
+          path: |
+            release/WordNest-*.dmg
+            release/WordNest-*.zip
+          if-no-files-found: error
+          retention-days: 14

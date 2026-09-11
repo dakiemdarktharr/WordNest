@@ -18,6 +18,12 @@ const config = {
     artifactName: 'WordNest-Setup-${version}-${arch}.${ext}',
     signAndEditExecutable: true,
   },
+  mac: {
+    target: ['dmg', 'zip'],
+    icon: '../build-resources/icon.png',
+    category: 'public.app-category.education',
+    artifactName: 'WordNest-${version}-${arch}.${ext}',
+  },
   nsis: {
     oneClick: false,
     perMachine: false,
