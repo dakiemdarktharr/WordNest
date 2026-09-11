@@ -4,22 +4,22 @@ WordNest là **ứng dụng desktop**, không phải website localhost. Người
 
 ## 1. Tải đúng bộ cài
 
-1. Mở [WordNest 0.2.2 trên GitHub Releases](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2).
+1. Mở [WordNest 0.2.3 trên GitHub Releases](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3).
 2. Mở phần **Assets** nếu danh sách đang thu gọn.
 3. Chọn đúng file theo máy:
-   - `WordNest-Setup-0.2.2-x64.exe` cho Windows 10/11 x64.
-   - `WordNest-0.2.2-x64.dmg` cho Mac Intel.
-   - `WordNest-0.2.2-arm64.dmg` cho Mac Apple Silicon.
+   - `WordNest-Setup-0.2.3-x64.exe` cho Windows 10/11 x64.
+   - `WordNest-0.2.3-x64.dmg` cho Mac Intel.
+   - `WordNest-0.2.3-arm64.dmg` cho Mac Apple Silicon.
    - File `.zip` tương ứng là lựa chọn thay thế cho macOS.
 4. Chờ tải xong, rồi mở thư mục Downloads / Tải xuống.
 
-[Tải bộ cài từ GitHub Release v0.2.2](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2)
+[Tải bộ cài từ GitHub Release v0.2.3](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3)
 
 File **Source code (zip)** và **Source code (tar.gz)** là mã nguồn dành cho lập trình viên, không phải bộ cài. Linux và Windows ARM64 chưa được kiểm chứng.
 
 ## 2. Cài app trên Windows
 
-1. Nhấp đúp vào `WordNest-Setup-0.2.2-x64.exe`.
+1. Nhấp đúp vào `WordNest-Setup-0.2.3-x64.exe`.
 2. Bộ cài chưa có chữ ký số nên Windows có thể hiện SmartScreen. Chỉ khi file đúng từ release nêu trên và bạn tin tưởng nguồn, chọn **More info → Run anyway** nếu tùy chọn này xuất hiện. Không tắt phần mềm bảo vệ.
 3. Làm theo hướng dẫn, chọn thư mục cài đặt nếu cần, rồi nhấn **Install**.
 4. Mở WordNest từ Desktop hoặc Start Menu.
@@ -30,13 +30,15 @@ File **Source code (zip)** và **Source code (tar.gz)** là mã nguồn dành ch
 2. Mở file `.dmg` đã tải.
 3. Kéo biểu tượng **WordNest** vào thư mục **Applications**.
 4. Mở **Applications → WordNest** hoặc dùng Spotlight tìm WordNest.
-5. Vì gói chưa được Apple notarize, macOS có thể cảnh báo lần đầu. Chọn **Open**; nếu bị chặn, vào **System Settings → Privacy & Security → Open Anyway**, sau đó mở lại WordNest.
+5. Bản 0.2.3 được ký ad-hoc, chưa có Developer ID/notarization của Apple. Nếu thông báo nói không xác minh được nhà phát triển và bạn tin tưởng nguồn, vào **System Settings → Privacy & Security → Open Anyway**.
+
+Nếu đang gặp “WordNest is damaged” ở 0.2.2: đóng app, tải DMG 0.2.3 đúng loại chip, kéo vào Applications và chọn **Replace** để thay app cũ. Eject DMG rồi mở WordNest từ Applications. Không xóa thư mục dữ liệu WordNest trong Library; thao tác thay app giữ hồ sơ học. Nếu vẫn báo “damaged”, giữ nguyên thông báo để báo lỗi, không tắt Gatekeeper hoặc chạy lệnh xóa quarantine hàng loạt.
 
 Không cần cài Node.js, chạy terminal, mở localhost hoặc giữ trình duyệt hoạt động.
 
 ## 4. Nhập TXT và bắt đầu học
 
-1. Nhận file TXT từ giáo viên, hoặc tải [file mẫu](https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.2.2/wordnest-demo.txt) trong Assets của release.
+1. Nhận file TXT từ giáo viên, hoặc tải [file mẫu](https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.2.3/wordnest-demo.txt) trong Assets của release.
 2. Trong WordNest, nhấn **Nhập file TXT** và chọn file trên máy.
 3. Xem phần xem trước, kiểm tra nội dung và hoàn tất tạo bộ học. Nếu app báo sai định dạng, sửa TXT rồi nhập lại.
 4. Mở bộ học, chọn **Flashcard**, lật thẻ rồi tự đánh giá mức độ nhớ.
@@ -73,4 +75,4 @@ Repo hiện public. Giáo viên có thể gửi liên kết GitHub Release, ch�
 
 ## Kiểm tra file tải xuống (tùy chọn)
 
-Release có `SHA256SUMS.txt`. Dùng checksum tương ứng với file đã tải để kiểm tra tính toàn vẹn. Các gói được phát hành chưa ký số hoặc notarize.
+Release có `SHA256-Windows.txt`, `SHA256-macOS-arm64.txt` và `SHA256-macOS-x64.txt`. Dùng checksum tương ứng với file đã tải để kiểm tra tính toàn vẹn. Windows chưa ký số. macOS được ký ad-hoc, chưa có chứng nhận Developer ID/notarization của Apple. Giọng phát âm Mac dùng Samantha; máy thiếu giọng này cần cài giọng tiếng Anh trong cài đặt hệ thống.

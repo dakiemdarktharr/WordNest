@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { speechRequest, speakText } from '../desktop/speech.mjs';
 
-test('Mac speech treats shell-like vocabulary as stdin, never executable arguments', () => {
+await test('Mac speech treats shell-like vocabulary as stdin, never executable arguments', () => {
   const text = '--voice $(touch /tmp/wordnest-injection); "hello"';
   const request = speechRequest(text, '/tmp/WordNest test.wav', 'darwin');
   assert.equal(request.executable, '/usr/bin/say');
@@ -18,7 +18,7 @@ test('Mac speech treats shell-like vocabulary as stdin, never executable argumen
   ]);
   assert.ok(request.args.includes('/tmp/WordNest test.wav'));
 });
-test('Windows speech preserves JSON transport and Unicode', () => {
+await test('Windows speech preserves JSON transport and Unicode', () => {
   const text = 'tò mò \n $(Get-Process)';
   const request = speechRequest(text, 'C:/sample.wav', 'win32');
   assert.match(request.executable, /powershell.exe$/);
@@ -28,13 +28,13 @@ test('Windows speech preserves JSON transport and Unicode', () => {
   });
   assert.ok(!request.args.includes(text));
 });
-test('invalid speech never starts a native process', async () => {
+await test('invalid speech never starts a native process', async () => {
   for (const text of ['', '  ', 'x'.repeat(501), null, 123])
     assert.deepEqual(await speakText(text), {
       ok: false,
       error: 'invalid-text',
     });
 });
-test('unsupported platforms do not attempt a Windows command', () => {
+await test('unsupported platforms do not attempt a Windows command', () => {
   assert.equal(speechRequest('word', undefined, 'linux'), null);
 });

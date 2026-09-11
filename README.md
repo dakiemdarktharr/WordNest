@@ -4,13 +4,13 @@
 
 WordNest is an original product for an English teacher who distributes vocabulary files outside the app. Learners need a simple way to turn those files into practice without creating accounts, uploading their materials, or depending on classroom Wi-Fi. The existing React/Electron app is retained; this focused update connects quiz results to the review scheduler and makes the core workflow demonstrable.
 
-**No generative AI or model provider is used.** “Intelligent” refers to explicit scheduling rules, not an LLM, trained model, or measured prediction of memory. Windows text-to-speech and optional browser WebMCP hooks are not AI content-generation features.
+**No generative AI or model provider is used.** “Intelligent” refers to explicit scheduling rules, not an LLM, trained model, or measured prediction of memory. Operating-system text-to-speech and optional browser WebMCP hooks are not AI content-generation features.
 
 ## Install the Windows desktop app
 
-**For learners: [download WordNest 0.2.2](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
+**For learners: [download WordNest 0.2.3](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
-[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2)
+[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3)
 
 ## See the workflow
 
@@ -39,7 +39,7 @@ flowchart LR
   Store --> UI
   Store --> Backup[JSON export and restore]
   Electron[Electron shell and bundled assets] --> UI
-  Electron --> Speech[Windows System.Speech]
+  Electron --> Speech[Windows System.Speech / macOS say]
 ```
 
 | Boundary | Implementation |
@@ -49,8 +49,8 @@ flowchart LR
 | Persistence | `lib/storage.ts` validates imported state; `components/use-study-data.ts` commits UI state only after a successful localStorage write |
 | UI | Existing flashcard, quiz, writing and matching components; shared controls and error messages |
 | Desktop entry | `desktop/main.mjs` serves bundled assets at `wordnest://app/`; sandboxed renderer, context isolation, no renderer Node access |
-| Native boundary | A narrow preload bridge opens import UI and requests speech; text travels as JSON to a fixed Windows speech script |
-| Packaging | `scripts/prepare-desktop.mjs` stages the built UI; Electron Builder produces a per-user NSIS installer |
+| Native boundary | A narrow preload bridge opens import UI and requests speech; text travels on stdin as JSON to a fixed Windows script or plain text to macOS say |
+| Packaging | `scripts/prepare-desktop.mjs` stages the built UI; Electron Builder produces a Windows NSIS installer and signed macOS DMG/ZIP bundles |
 
 No backend, API key, account, cloud synchronization, or external content service is needed for the desktop study workflow.
 
@@ -152,7 +152,7 @@ CI runs logic/security checks, type checking, lint, the production web journey, 
 
 ## Measured evidence
 
-Measured on **2026-09-11**, Windows x64 build 26200, AMD Ryzen AI 5 340, Node.js 24.18.0. Raw measurements, methodology and input hashes: [metrics.json](docs/evidence/metrics.json). Verification details: [acceptance record](docs/ACCEPTANCE.md).
+Historical **0.2.2** measurements, taken on **2026-09-11**, Windows x64 build 26200, AMD Ryzen AI 5 340, Node.js 24.18.0. Raw measurements, methodology and input hashes: [metrics.json](docs/evidence/metrics.json). Verification details: [acceptance record](docs/ACCEPTANCE.md).
 
 | Measurement | Observed result |
 | --- | --- |
@@ -171,29 +171,30 @@ Microbenchmarks run in one Node process: five warm-ups, then 25 timed runs; inpu
 
 ## Release and installation
 
-The source version in this branch is **0.2.2**. Build the verified local Windows installer with:
+The source version in this branch is **0.2.3**. Build the verified local Windows installer with:
 
 ```powershell
 npm ci
 npm run desktop:dist
-& '.\release\WordNest-Setup-0.2.2-x64.exe'
-Get-FileHash '.\release\WordNest-Setup-0.2.2-x64.exe' -Algorithm SHA256
+& '.\release\WordNest-Setup-0.2.3-x64.exe'
+Get-FileHash '.\release\WordNest-Setup-0.2.3-x64.exe' -Algorithm SHA256
 ```
 
 Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.
 
-The macOS packages are built on GitHub's macOS runners:
+Build a macOS package on the matching Mac architecture (the release workflow builds and tests both architectures on separate machines):
 
 ```bash
 npm ci
-npm run desktop:dist:mac
+npm run desktop:dist:mac -- --arm64
+# On an Intel Mac, use --x64 instead.
 ```
 
-This produces `.dmg` and `.zip` packages for Intel (`x64`) and Apple Silicon (`arm64`). A macOS machine is required for a local macOS build.
+This produces `.dmg` and `.zip` packages for the selected architecture. A macOS machine is required. `npm run test:mac` verifies signatures and runs the study journey from both packages on that architecture. Release tests download the artifacts onto a new Mac runner before verification.
 
-[GitHub Release v0.2.2](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.2) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
+[GitHub Release v0.2.3](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
 
-The Windows installer and macOS packages are **unsigned**, so Windows may show SmartScreen and macOS may require Privacy & Security → Open Anyway on first launch. Updates are manual. No Linux or Windows ARM64 package has been verified. Release checksums identify the published artifacts.
+Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with hardened runtime and Electron JIT/library entitlements. They are not Apple Developer ID signed or notarized. macOS may still require Privacy & Security → Open Anyway for an unverified developer; this must not be confused with a broken code signature. Do not disable Gatekeeper to work around a damaged-app error. Updates are manual. No Linux or Windows ARM64 package has been verified. Release checksums identify the published artifacts.
 
 ## Product and technical decisions
 
