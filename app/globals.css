@@ -6,15 +6,15 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: #fff;
-  --color-muted: #eef1f6;
-  --color-muted-foreground: #667085;
-  --color-popover: #fff;
-  --color-popover-foreground: #17233b;
-  --color-border: #dde3ee;
-  --color-input: #d9e0eb;
+  --color-muted: var(--subtle);
+  --color-muted-foreground: var(--muted-text);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--foreground);
+  --color-border: var(--line);
+  --color-input: var(--line);
   --color-ring: #475fe6;
-  --color-accent: #edf1ff;
-  --color-accent-foreground: #263db0;
+  --color-accent: var(--accent-surface);
+  --color-accent-foreground: var(--accent-text);
   --radius-lg: 12px;
 }
 :root {
@@ -1665,4 +1665,250 @@ small {
 }
 .environment-note strong {
   color: #273f69;
+}
+
+/* Theme tokens also style portalled menus and dialogs outside the app shell. */
+:root {
+  --surface: #fff;
+  --subtle: #eef1f6;
+  --muted-text: #667085;
+  --line: #dde3ee;
+  --accent-surface: #edf1ff;
+  --accent-text: #263db0;
+}
+:root.dark {
+  color-scheme: dark;
+  --background: #111827;
+  --foreground: #e7edf7;
+  --primary: #93a5ff;
+  --surface: #1c2638;
+  --subtle: #263249;
+  --muted-text: #acbad0;
+  --line: #43516a;
+  --accent-surface: #2c3a60;
+  --accent-text: #b6c4ff;
+}
+.theme-control {
+  position: relative;
+}
+.vocabulary-editor {
+  display: grid;
+  gap: 14px;
+}
+.vocabulary-editor-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 40px;
+  gap: 12px;
+  align-items: end;
+}
+.vocabulary-editor-row input {
+  min-width: 0;
+  width: 100%;
+}
+.import-hero .button {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+.dark
+  :is(
+    .topbar,
+    .panel,
+    .button:not(.primary):not(.danger-button),
+    .format-preview,
+    .stats-strip,
+    .search-box,
+    .deck-card,
+    .mode-card,
+    .flash-card,
+    .quiz-card,
+    .rating,
+    .question-map button,
+    .match-tile,
+    .speech-error,
+    .skip-link
+  ) {
+  background: var(--surface);
+  color: var(--foreground);
+  border-color: var(--line);
+}
+.dark :is(input, textarea, select) {
+  background: var(--surface);
+  color: var(--foreground);
+  border-color: var(--line);
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--muted-text);
+}
+.dark .picker {
+  background: var(--surface) !important;
+  color: var(--foreground);
+}
+.dark
+  :is(
+    .import-hero,
+    .import-preview,
+    .dropzone,
+    .notice,
+    .resume-banner,
+    .environment-note,
+    .code-sample,
+    .explanation,
+    .answer-letter,
+    .count-badge,
+    .new-deck-card > span,
+    .score-chip,
+    .flash-card.is-flipped
+  ) {
+  background: var(--subtle);
+  color: var(--foreground);
+  border-color: var(--line);
+}
+.dark
+  :is(
+    .muted,
+    .beta,
+    .local-badge,
+    .eyebrow,
+    .import-hero p,
+    .file-label,
+    .format-preview pre,
+    .question-row span,
+    .today-label,
+    .icon-button,
+    .back-button,
+    .stats-strip div > span:last-child,
+    .deck-progress > span,
+    .new-deck-card,
+    .privacy-note,
+    .app-footer,
+    .dropzone span,
+    .mini-pair span,
+    .mode-card p,
+    .setting-note,
+    .vocab-pair > span,
+    .vocab-pair small,
+    .empty-copy,
+    .row-number,
+    .progress-label,
+    .flash-top > span,
+    .flash-example,
+    .flip-hint,
+    .flash-nav > span,
+    .aside-tip,
+    .history-row small,
+    .guide-notes p,
+    .guide-notes b
+  ) {
+  color: var(--muted-text);
+}
+.dark
+  :is(
+    .text-button,
+    .pill,
+    .deck-link,
+    .history-score,
+    .result-score,
+    .environment-note strong
+  ) {
+  color: var(--accent-text);
+}
+.dark
+  :is(
+    .vocab-row,
+    .review-row,
+    .history-row,
+    .study-aside .toggle-row,
+    .stats-strip > div,
+    .file-label,
+    .format-note,
+    .question-row,
+    .answer-option,
+    .app-footer,
+    .main-tabs
+  ) {
+  border-color: var(--line);
+}
+.dark .main-tabs [data-slot='tabs-trigger'] {
+  color: var(--muted-text);
+}
+.dark .main-tabs [data-active] {
+  color: var(--accent-text) !important;
+}
+.dark
+  :is(
+    .button:not(.primary):not(.danger-button):hover,
+    .icon-button:hover,
+    .new-deck-card:hover,
+    .rating:hover:not(:disabled),
+    .answer-option.selected,
+    .match-tile.selected,
+    .question-map .answered
+  ) {
+  background: var(--accent-surface);
+  color: var(--foreground);
+  border-color: #93a5ff;
+}
+.dark
+  :is(
+    .positive,
+    .answer-option.correct,
+    .match-tile.matched,
+    .green,
+    .theme-1 .deck-icon
+  ) {
+  background: #193e34;
+  color: #9aebc4;
+  border-color: #5cb798;
+}
+.dark :is(.negative, .error, .answer-option.incorrect) {
+  background: #482938;
+  color: #ffbdc9;
+  border-color: #df8c9e;
+}
+.dark :is(.correct-text, .success-line, .format-note, .rating-2) {
+  color: #9aebc4;
+}
+.dark :is(.wrong-text, .danger, .rating-0, .speech-error) {
+  color: #ffbdc9;
+}
+.dark :is(.blue, .deck-icon) {
+  background: #2c3a60;
+  color: #b6c4ff;
+}
+.dark :is(.orange, .trophy, .theme-2 .deck-icon) {
+  background: #483822;
+  color: #f3cd8c;
+}
+.dark .rating-1 {
+  color: #f3cd8c;
+}
+.dark .rating-3 {
+  color: #b6c4ff;
+}
+.dark .flash-card {
+  box-shadow:
+    0 7px 0 -2px #2a3549,
+    0 14px 0 -5px #202c40;
+}
+@media (max-width: 700px) {
+  .theme-control .button {
+    padding: 8px;
+  }
+  .theme-control .button span,
+  .local-badge {
+    display: none;
+  }
+  .vocabulary-editor-row {
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px;
+  }
+}
+@media print {
+  :root.dark {
+    --background: white;
+    --foreground: black;
+    --surface: white;
+    --muted-text: #444;
+  }
 }

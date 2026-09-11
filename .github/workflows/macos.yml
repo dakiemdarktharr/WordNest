@@ -30,6 +30,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run test:security
+      - run: npm run lint
       - run: npm run desktop:dist:mac -- --${{ matrix.arch }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'

@@ -96,7 +96,7 @@ export function parseBackup(raw: string): StudyData {
       !id(s.id) ||
       sessionIds.has(s.id) ||
       !data.decks.some((d) => d.id === s.deckId) ||
-      !['practice', 'test', 'write'].includes(String(s.mode)) ||
+      !['practice', 'test', 'write', 'mastery'].includes(String(s.mode)) ||
       !uniqueQuestions(s.questions) ||
       !obj(s.answers) ||
       !Number.isInteger(s.index) ||
@@ -108,6 +108,51 @@ export function parseBackup(raw: string): StudyData {
       typeof s.reverse !== 'boolean'
     )
       throw new Error('Phiên học trong bản sao lưu không hợp lệ.');
+    if (s.mode === 'mastery') {
+      const m = s.mastery;
+      const questions = s.questions;
+      const answers = s.answers;
+      if (
+        !obj(m) ||
+        !Array.isArray(m.queue) ||
+        m.queue.length > s.questions.length ||
+        !m.queue.every((key) => questions.some((q) => q.id === key)) ||
+        new Set(m.queue).size !== m.queue.length ||
+        !Number.isSafeInteger(m.attempts) ||
+        !num(m.attempts) ||
+        m.attempts < Object.keys(s.answers).length ||
+        s.deadline !== null ||
+        (m.queue.length
+          ? s.finishedAt !== null || m.queue[0] !== s.questions[s.index].id
+          : s.finishedAt === null) ||
+        questions.some(
+          (q) => !(m.queue as unknown[]).includes(q.id) && !answers[q.id],
+        )
+      ) {
+        throw new Error('Hàng đợi học đến khi đúng không hợp lệ.');
+      }
+      if (m.feedback !== null) {
+        const a = m.feedback;
+        const q = s.questions[s.index];
+        if (
+          !m.queue.length ||
+          !obj(a) ||
+          !Array.isArray(a.selected) ||
+          !a.selected.length ||
+          new Set(a.selected).size !== a.selected.length ||
+          a.selected.some(
+            (choice) => !q.choices.some((c) => c.id === choice),
+          ) ||
+          !s.answers[q.id] ||
+          typeof a.correct !== 'boolean' ||
+          m.attempts < 1
+        )
+          throw new Error('Phản hồi lượt luyện không hợp lệ.');
+        a.correct = grade(q, a.selected);
+      }
+    } else if (s.mastery !== undefined) {
+      throw new Error('Hàng đợi không thuộc chế độ học này.');
+    }
     sessionIds.add(s.id);
     const deck = data.decks.find((d) => d.id === s.deckId);
     for (const q of s.questions)

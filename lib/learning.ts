@@ -25,7 +25,7 @@ export type Answer = { selected: string[]; typed?: string; correct: boolean };
 export type Session = {
   id: string;
   deckId: string;
-  mode: 'practice' | 'test' | 'write';
+  mode: 'practice' | 'test' | 'write' | 'mastery';
   questions: Question[];
   answers: Record<string, Answer>;
   index: number;
@@ -33,6 +33,7 @@ export type Session = {
   deadline: number | null;
   finishedAt: number | null;
   reverse: boolean;
+  mastery?: { queue: string[]; attempts: number; feedback: Answer | null };
 };
 export type StudyData = {
   version: 1;
@@ -274,17 +275,27 @@ export function makeSession(
     ? questions.filter((q) => onlyIds.includes(q.id))
     : questions;
   const now = Date.now();
+  const chosen = (random ? shuffle(selected) : selected).slice(0, count);
   return {
     id: crypto.randomUUID(),
     deckId: deck.id,
     mode,
-    questions: (random ? shuffle(selected) : selected).slice(0, count),
+    questions: chosen,
     answers: {},
     index: 0,
     startedAt: now,
-    deadline: minutes ? now + minutes * 60_000 : null,
+    deadline: mode === 'test' && minutes ? now + minutes * 60_000 : null,
     finishedAt: null,
     reverse,
+    ...(mode === 'mastery'
+      ? {
+          mastery: {
+            queue: chosen.map((q) => q.id),
+            attempts: 0,
+            feedback: null,
+          },
+        }
+      : {}),
   };
 }
 export const DEMO_TXT =
@@ -300,6 +311,8 @@ export function completeSession(
 ): StudyData {
   const session = data.sessions.find((s) => s.id === sessionId);
   if (!session || session.finishedAt !== null) return data;
+  if (session.mode === 'mastery' && session.mastery?.queue.length !== 0)
+    return data;
   const reviews = { ...data.reviews };
   const answers = { ...session.answers };
   for (const question of session.questions) {

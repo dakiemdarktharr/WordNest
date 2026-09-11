@@ -29,6 +29,7 @@ import {
   type Session,
   type StudyData,
 } from '@/lib/learning';
+import { answerMastery, advanceMastery } from '@/lib/mastery';
 import { download, sessionScore } from '@/lib/storage';
 export function QuizSession({
   session,
@@ -44,7 +45,8 @@ export function QuizSession({
   onRetry: (ids: string[]) => void;
 }) {
   const q = session.questions[session.index];
-  const answer = session.answers[q.id];
+  const isMastery = session.mode === 'mastery';
+  const answer = isMastery ? session.mastery?.feedback : session.answers[q.id];
   const [selected, setSelected] = useState<string[]>(answer?.selected ?? []);
   const [typed, setTyped] = useState(answer?.typed ?? '');
   const [confirm, setConfirm] = useState(false);
@@ -91,6 +93,13 @@ export function QuizSession({
         finish();
         return false;
       }
+      if (session.mode === 'mastery')
+        return update((d) => ({
+          ...d,
+          sessions: d.sessions.map((s) =>
+            s.id === session.id ? answerMastery(s, ids) : s,
+          ),
+        }));
       return patch({
         answers: {
           ...session.answers,
@@ -105,7 +114,7 @@ export function QuizSession({
         },
       });
     },
-    [session, q, finish, patch],
+    [session, q, finish, patch, update],
   );
   function choose(id: string) {
     if (feedback) return;
@@ -134,15 +143,23 @@ export function QuizSession({
           </div>
           <p className="eyebrow">MỘT BƯỚC TIẾN MỚI</p>
           <h1>
-            {score.correct === score.total
-              ? 'Bạn đã làm đúng tất cả!'
-              : 'Hoàn thành lượt học!'}
+            {isMastery
+              ? 'Bạn đã chọn đúng toàn bộ bộ câu hỏi!'
+              : score.correct === score.total
+                ? 'Bạn đã làm đúng tất cả!'
+                : 'Hoàn thành lượt học!'}
           </h1>
           <p className="muted">{deck.title}</p>
           <div className="result-score">
             {Math.round((score.correct / score.total) * 100)}
             <span>%</span>
           </div>
+          {isMastery && (
+            <p className="muted">
+              Điểm lần đầu · {session.mastery?.attempts} lượt trả lời để hoàn
+              thành
+            </p>
+          )}
           <p>
             {score.correct} / {score.total} câu đúng ·{' '}
             {Object.keys(session.answers).length} câu đã trả lời
@@ -165,6 +182,9 @@ export function QuizSession({
                     deck.title +
                     '\n' +
                     new Date(session.finishedAt!).toLocaleString('vi-VN') +
+                    (isMastery
+                      ? '\nĐiểm lần đầu (đã luyện đến khi đúng tất cả)'
+                      : '') +
                     '\nĐúng: ' +
                     score.correct +
                     '/' +
@@ -205,7 +225,9 @@ export function QuizSession({
         </div>
         <output className="small center muted">
           Lịch ôn đã cập nhật: câu đúng được giãn lịch, câu sai hoặc bỏ trống ôn
-          lại sau 1 phút.
+          lại sau 1 phút.{' '}
+          {isMastery &&
+            'Áp dụng kết quả lần trả lời đầu, kể cả câu đã sửa đúng trong lượt này.'}
         </output>
         <section className="panel">
           <h2>Xem lại để nhớ lâu hơn</h2>
@@ -228,7 +250,7 @@ export function QuizSession({
                       : q.prompt}
                   </h3>
                   <p className="muted">
-                    Bạn trả lời:{' '}
+                    {isMastery ? 'Lần đầu bạn trả lời: ' : 'Bạn trả lời: '}{' '}
                     {a
                       ? (a.typed ??
                         (q.choices
@@ -264,11 +286,13 @@ export function QuizSession({
         <div>
           <p className="eyebrow">{deck.title}</p>
           <h1>
-            {session.mode === 'test'
-              ? 'Kiểm tra'
-              : session.mode === 'write'
-                ? 'Luyện gõ từ vựng'
-                : 'Luyện tập'}
+            {isMastery
+              ? 'Học đến khi đúng'
+              : session.mode === 'test'
+                ? 'Kiểm tra'
+                : session.mode === 'write'
+                  ? 'Luyện gõ từ vựng'
+                  : 'Luyện tập'}
           </h1>
         </div>
         {session.deadline ? (
@@ -287,11 +311,23 @@ export function QuizSession({
         <span>
           Câu {session.index + 1} / {session.questions.length}
         </span>
-        <span>{Object.keys(session.answers).length} câu đã trả lời</span>
+        <span>
+          {isMastery
+            ? session.questions.length -
+              (session.mastery?.queue.length ?? 0) +
+              ' / ' +
+              session.questions.length +
+              ' câu đã vượt qua'
+            : Object.keys(session.answers).length + ' câu đã trả lời'}
+        </span>
       </div>
       <Progress
         value={
-          (Object.keys(session.answers).length / session.questions.length) * 100
+          ((isMastery
+            ? session.questions.length - (session.mastery?.queue.length ?? 0)
+            : Object.keys(session.answers).length) /
+            session.questions.length) *
+          100
         }
         aria-label="Tiến độ trả lời"
       />
@@ -413,14 +449,16 @@ export function QuizSession({
           </output>
         )}
         <div className="quiz-actions">
-          <button
-            className="button"
-            disabled={session.index === 0}
-            onClick={() => patch({ index: session.index - 1 })}
-          >
-            <ArrowLeft size={16} />
-            Câu trước
-          </button>
+          {!isMastery && (
+            <button
+              className="button"
+              disabled={session.index === 0}
+              onClick={() => patch({ index: session.index - 1 })}
+            >
+              <ArrowLeft size={16} />
+              Câu trước
+            </button>
+          )}
           {!isTest && !feedback && session.mode !== 'write' && (
             <button
               className="button primary"
@@ -430,7 +468,21 @@ export function QuizSession({
               Kiểm tra đáp án
             </button>
           )}
-          {(isTest || feedback) &&
+          {isMastery && feedback && (
+            <button
+              className="button primary"
+              onClick={() =>
+                update((d) => advanceMastery(d, session.id, Date.now()))
+              }
+            >
+              {session.mastery?.queue.length === 1 && answer?.correct
+                ? 'Hoàn thành lượt học'
+                : 'Tiếp tục luyện'}
+              <ArrowRight size={17} />
+            </button>
+          )}
+          {!isMastery &&
+            (isTest || feedback) &&
             (session.index < session.questions.length - 1 ? (
               <button
                 className="button primary"
@@ -472,9 +524,11 @@ export function QuizSession({
         </div>
       )}
       <p className="small center muted">
-        {isTest
-          ? 'Đáp án và giải thích sẽ hiện sau khi nộp bài.'
-          : 'Trả lời, đọc giải thích và tiếp tục theo nhịp của bạn.'}
+        {isMastery
+          ? 'Câu sai được đưa về cuối lượt. Có thể tạm nghỉ và tiếp tục bất cứ lúc nào.'
+          : isTest
+            ? 'Đáp án và giải thích sẽ hiện sau khi nộp bài.'
+            : 'Trả lời, đọc giải thích và tiếp tục theo nhịp của bạn.'}
       </p>
       <AlertDialog open={confirm} onOpenChange={setConfirm}>
         <AlertDialogContent>

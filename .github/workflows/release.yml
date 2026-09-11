@@ -16,7 +16,9 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - run: npm test
       - run: npm run test:security
+      - run: npm run lint
       - run: npm run desktop:dist
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
@@ -61,4 +63,4 @@ jobs:
             examples/wordnest-demo.txt \
             --repo "$GITHUB_REPOSITORY" \
             --title "WordNest ${GITHUB_REF_NAME#v} — desktop apps" \
-            --notes-file docs/RELEASE-0.2.3.md
+            --notes-file docs/RELEASE-0.3.0.md

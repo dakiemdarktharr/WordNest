@@ -35,6 +35,8 @@ import {
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
+import { DeckCreator } from '@/components/deck-creator';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Importer } from '@/components/importer';
 import { Flashcards } from '@/components/flashcards';
 import { MatchGame } from '@/components/match-game';
@@ -61,6 +63,7 @@ import {
 } from '@/lib/storage';
 
 const modeNames = {
+  mastery: 'Học đến khi đúng',
   practice: 'Luyện tập',
   test: 'Kiểm tra',
   write: 'Luyện gõ',
@@ -72,6 +75,7 @@ export default function Home() {
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [termSearch, setTermSearch] = useState('');
   const [notice, setNotice] = useState('');
@@ -298,6 +302,7 @@ export default function Home() {
           <span className="beta">HỌC THEO CÁCH CỦA BẠN</span>
         </button>
         <div className="inline-controls">
+          <ThemeToggle />
           <span className="local-badge">
             <span />
             Lưu trên thiết bị
@@ -372,7 +377,15 @@ export default function Home() {
           <MatchGame deck={deck} onBack={() => setView('deck')} />
         ) : view === 'session' && deck && session ? (
           <QuizSession
-            key={session.id + ':' + session.index}
+            key={
+              session.id +
+              ':' +
+              session.index +
+              ':' +
+              (session.mastery?.queue.join(',') ?? '') +
+              ':' +
+              Boolean(session.mastery?.feedback)
+            }
             deck={deck}
             session={session}
             update={update}
@@ -493,6 +506,10 @@ export default function Home() {
                     onChange={(v) => setMode(v as Session['mode'])}
                     options={[
                       {
+                        value: 'mastery',
+                        label: 'Học đến khi đúng · lặp lại câu sai',
+                      },
+                      {
                         value: 'practice',
                         label: 'Luyện tập · hiện đáp án từng câu',
                       },
@@ -555,6 +572,12 @@ export default function Home() {
                   onChange={setRandom}
                   label="Trộn thứ tự câu hỏi"
                 />
+                {mode === 'mastery' && (
+                  <p className="small muted">
+                    Hiện đáp án sau mỗi câu. Câu sai trở lại cuối lượt đến khi
+                    bạn chọn đúng. Điểm và lịch ôn dựa trên lần trả lời đầu.
+                  </p>
+                )}
                 {mode === 'write' && (
                   <>
                     <Toggle
@@ -692,6 +715,13 @@ export default function Home() {
                   >
                     <FileUp size={19} />
                     Nhập file TXT
+                  </button>
+                  <button
+                    className="button"
+                    onClick={() => setCreateOpen(true)}
+                  >
+                    <Plus size={19} />
+                    Tạo bộ từ
                   </button>
                   <button
                     className="text-button"
@@ -1079,6 +1109,11 @@ export default function Home() {
           void readBackup(e.target.files?.[0]);
           e.target.value = '';
         }}
+      />
+      <DeckCreator
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreate={addDeck}
       />
       <Importer
         open={importOpen}

@@ -1,3 +1,4 @@
+import { featureJourney } from './feature-journey.mjs';
 import { _electron as electron, chromium, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -315,6 +316,34 @@ try {
       },
     );
   }
+  await featureJourney(page, check, snapshot);
+  if (desktop) {
+    await check(
+      'new features survive desktop quit and cold relaunch',
+      async () => {
+        const saved = await stored();
+        const executablePath = path.resolve(
+          process.env.WORDNEST_EXECUTABLE ||
+            'release/win-unpacked/WordNest.exe',
+        );
+        await app.close();
+        app = undefined;
+        app = await electron.launch({
+          executablePath,
+          args: ['--wordnest-smoke'],
+          env: desktopEnv,
+        });
+        page = await app.firstWindow();
+        await expect(
+          page.getByRole('button', { name: 'Tạo bộ từ', exact: true }),
+        ).toBeVisible();
+        expect(await stored()).toEqual(saved);
+        await expect(
+          page.getByRole('button', { name: 'Chuyển sang giao diện tối' }),
+        ).toBeVisible();
+      },
+    );
+  }
   if (!desktop) {
     const corrupted = await browser.newContext();
     await corrupted.addInitScript(() =>
@@ -367,6 +396,43 @@ try {
         await deniedPage.evaluate(() => localStorage.getItem('wordnest:v1')),
       ).toBeNull();
     });
+    await deniedPage.keyboard.press('Escape');
+    await check(
+      'theme write failure is visible without blocking study',
+      async () => {
+        await deniedPage.locator('.theme-control button').click();
+        await expect(
+          deniedPage.locator('.theme-control [role=alert]'),
+        ).toContainText('không lưu được tùy chọn');
+        expect(
+          await deniedPage.evaluate(() =>
+            localStorage.getItem('wordnest:theme'),
+          ),
+        ).toBeNull();
+      },
+    );
+    await check(
+      'failed manual deck save keeps form contents and does not add a deck',
+      async () => {
+        await deniedPage
+          .getByRole('button', { name: 'Tạo bộ từ', exact: true })
+          .click();
+        const editor = deniedPage.getByRole('dialog');
+        await editor.getByLabel('Tên bộ từ', { exact: true }).fill('Unsaved');
+        await editor.getByLabel('Từ 1', { exact: true }).fill('apple');
+        await editor.getByLabel('Nghĩa 1', { exact: true }).fill('quả táo');
+        await editor.getByRole('button', { name: 'Lưu bộ từ' }).click();
+        await expect(editor.getByRole('alert')).toContainText(
+          'Chưa lưu được bộ từ',
+        );
+        await expect(editor.getByLabel('Từ 1', { exact: true })).toHaveValue(
+          'apple',
+        );
+        expect(
+          await deniedPage.evaluate(() => localStorage.getItem('wordnest:v1')),
+        ).toBeNull();
+      },
+    );
     await denied.close();
   }
   expect(errors).toEqual([]);

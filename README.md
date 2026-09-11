@@ -8,9 +8,20 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 ## Install the desktop app
 
-**For learners: [download WordNest 0.2.3](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
+**For learners: [download WordNest 0.3.0](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
-[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3)
+[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0)
+
+## New in 0.3.0
+
+- **Create a deck inside the app:** choose **Tạo bộ từ**, enter a title and word/meaning rows, then **Lưu bộ từ**. The same parser creates exportable TXT and flashcards/quiz content.
+- **Light/dark mode:** use the top-right theme button. The initial theme follows the OS; an explicit selection persists locally and also styles dialogs and menus.
+- **Learn until correct:** choose **Học đến khi đúng · lặp lại câu sai** in the study-mode menu. Each confirmed answer displays feedback; incorrect questions return to the end of the queue until answered correctly. The queue and current feedback survive closing the app.
+- **Honest progress:** the result score and spaced-repetition updates use first attempts. Subsequent corrections complete the practice queue without inflating recall scores. Scheduling applies once when all questions are cleared.
+
+The shared React workflow runs in both desktop packages. Windows release checks launch the installed EXE; fresh native ARM64 and Intel Mac CI machines verify and launch both DMG/ZIP apps. Release publication depends on these checks. See [release details](docs/RELEASE-0.3.0.md).
+
+Theme settings are device preferences, separate from JSON learning backups. Version 0.3.0 reads existing backups; older app versions cannot read backups containing the new mastery mode. The manual deck form creates new decks; editing an existing deck is still done by exporting/changing/importing TXT.
 
 ## See the workflow
 
@@ -25,6 +36,14 @@ These are actual screenshots of the production web build, captured by the automa
 | ![WordNest quiz feedback](docs/demo/03-quiz.png) | ![WordNest progress after a 3 of 4 quiz](docs/demo/05-progress.png) |
 
 [Full quiz result screenshot](docs/demo/04-results.png) · [Demo details and provenance](docs/demo/README.md)
+
+### New workflow screenshots (0.3.0)
+
+Actual production web captures from the scripted three-word fixture; desktop behavior is checked separately.
+
+| Create a deck in dark mode | Retry until correct |
+| --- | --- |
+| ![Create a vocabulary deck](docs/demo/06-create-dark.png) | ![Mastery feedback](docs/demo/07-mastery-dark.png) |
 
 ## Architecture
 
@@ -171,13 +190,13 @@ Microbenchmarks run in one Node process: five warm-ups, then 25 timed runs; inpu
 
 ## Release and installation
 
-The source version in this branch is **0.2.3**. Build the verified local Windows installer with:
+The source version in this branch is **0.3.0**. Build the verified local Windows installer with:
 
 ```powershell
 npm ci
 npm run desktop:dist
-& '.\release\WordNest-Setup-0.2.3-x64.exe'
-Get-FileHash '.\release\WordNest-Setup-0.2.3-x64.exe' -Algorithm SHA256
+& '.\release\WordNest-Setup-0.3.0-x64.exe'
+Get-FileHash '.\release\WordNest-Setup-0.3.0-x64.exe' -Algorithm SHA256
 ```
 
 Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.
@@ -192,7 +211,7 @@ npm run desktop:dist:mac -- --arm64
 
 This produces `.dmg` and `.zip` packages for the selected architecture. A macOS machine is required. `npm run test:mac` verifies signatures and runs the study journey from both packages on that architecture. Release tests download the artifacts onto a new Mac runner before verification.
 
-[GitHub Release v0.2.3](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.3) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
+[GitHub Release v0.3.0](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
 
 Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with hardened runtime and Electron JIT/library entitlements. They are not Apple Developer ID signed or notarized. macOS may still require Privacy & Security → Open Anyway for an unverified developer; this must not be confused with a broken code signature. Do not disable Gatekeeper to work around a damaged-app error. Updates are manual. No Linux or Windows ARM64 package has been verified. Release checksums identify the published artifacts.
 
@@ -200,6 +219,7 @@ Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with
 
 - **Offline desktop first:** teachers already distribute TXT independently; bundling the UI lets learners use that material without accounts or classroom connectivity. The cost is a larger installer and device-local data.
 - **Explainable spaced repetition:** short retries for forgotten words and expanding intervals for remembered words make review priorities inspectable. The simple deterministic heuristic is easy to test and does not claim trained or individualized memory prediction.
+- **Retry without score inflation:** a bounded queue stores each unfinished question once; wrong answers rotate, correct answers leave. First attempts remain separate from the current feedback, so repeated guessing does not turn into a perfect recall score.
 - **One scheduler for cards and quizzes:** submitted answers feed the same schedule as flashcard ratings. An idempotent completion operation prevents double submission from inflating progress.
 - **LocalStorage with validated backups:** retained to avoid a storage rewrite in this focused slice. Writes are atomic at the key level, failures are visible, and JSON supports transfer. Quotas and lack of cross-device sync remain tradeoffs.
 - **No AI provider abstraction:** no AI runtime feature exists. Adding a mock LLM interface would imply a capability the product does not have.
@@ -217,4 +237,4 @@ Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with
 ## Two-line resume bullet
 
 - Developed WordNest, an offline-first vocabulary application using React, TypeScript and Electron, turning teacher-provided TXT files into flashcards and quizzes with local progress and JSON backup.
-- Implemented deterministic spaced-repetition updates and idempotent quiz completion; verified the core journey with 36 automated logic/security tests, browser/Electron checks, and Windows/macOS package testing.
+- Implemented deterministic spaced-repetition updates and idempotent quiz completion; verified the core journey with 43 automated logic/security tests, browser/Electron checks, and Windows/macOS package testing.
