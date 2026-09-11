@@ -65,9 +65,11 @@ export function Speak({
   lang?: string;
 }) {
   const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
   function speak() {
     if (window.wordnestDesktop) {
       setError('');
+      setPending(true);
       void window.wordnestDesktop
         .speak(text)
         .then((result) => {
@@ -75,10 +77,13 @@ export function Speak({
             setError(
               result.error === 'invalid-text'
                 ? 'Chỉ đọc tối đa 500 ký tự mỗi lần.'
-                : 'Chưa phát được âm thanh. Kiểm tra loa và giọng tiếng Anh của Windows.',
+                : 'Chưa phát được âm thanh. Kiểm tra loa và giọng tiếng Anh trên thiết bị.',
             );
         })
-        .catch(() => setError('Không kết nối được chức năng phát âm Windows.'));
+        .catch(() =>
+          setError('Không kết nối được chức năng phát âm trên thiết bị.'),
+        )
+        .finally(() => setPending(false));
       return;
     }
     if (!('speechSynthesis' in window)) {
@@ -109,6 +114,8 @@ export function Speak({
         title="Nghe phát âm"
         aria-label={'Nghe phát âm: ' + text}
         onClick={speak}
+        aria-busy={pending}
+        disabled={pending}
       >
         <Volume2 size={20} />
       </button>

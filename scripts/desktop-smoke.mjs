@@ -60,7 +60,7 @@ try {
   ).toBe(true);
   // Exercise the native menu -> isolated preload -> import dialog.
   await app.evaluate(({ Menu }) =>
-    Menu.getApplicationMenu().items[0].submenu.items[0].click(),
+    Menu.getApplicationMenu().getMenuItemById('import-txt').click(),
   );
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();

@@ -11,7 +11,7 @@ const fixture = await readFile('examples/wordnest-demo.txt');
 const checks = [];
 const errors = [];
 const started = performance.now();
-let app, browser, context, page;
+let app, browser, context, page, desktopEnv;
 async function check(name, fn) {
   await fn();
   checks.push(name);
@@ -36,6 +36,7 @@ try {
       WORDNEST_TEST_USER_DATA: path.join(output, 'profile-' + Date.now()),
     };
     delete env.ELECTRON_RUN_AS_NODE;
+    desktopEnv = env;
     app = await electron.launch({
       executablePath: path.resolve(
         process.env.WORDNEST_EXECUTABLE || 'release/win-unpacked/WordNest.exe',
@@ -202,6 +203,118 @@ try {
   );
   await page.getByRole('tab', { name: /Tiến độ/ }).click();
   await snapshot('05-progress');
+  if (desktop && process.platform === 'darwin') {
+    await check('Mac native menu and renderer isolation', async () => {
+      expect(
+        await app.evaluate(({ Menu, BrowserWindow }) => {
+          const menu = Menu.getApplicationMenu();
+          const prefs =
+            BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences();
+          return {
+            importShortcut: menu.getMenuItemById('import-txt').accelerator,
+            appMenu: menu.items[0].role,
+            sandbox: prefs.sandbox,
+            nodeIntegration: prefs.nodeIntegration,
+            contextIsolation: prefs.contextIsolation,
+          };
+        }),
+      ).toEqual({
+        importShortcut: 'CmdOrCtrl+O',
+        appMenu: 'appmenu',
+        sandbox: true,
+        nodeIntegration: false,
+        contextIsolation: true,
+      });
+      await app.evaluate(({ Menu }) =>
+        Menu.getApplicationMenu().getMenuItemById('import-txt').click(),
+      );
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await page.keyboard.press('Escape');
+    });
+    await check('Mac native backup preserves the study library', async () => {
+      const backupPath = path.join(output, 'backup.json');
+      await app.evaluate(({ session }, file) => {
+        session.defaultSession.once('will-download', (_event, item) =>
+          item.setSavePath(file),
+        );
+      }, backupPath);
+      await page
+        .getByRole('button', { name: 'Xuất sao lưu', exact: true })
+        .click();
+      await expect
+        .poll(async () => {
+          try {
+            return JSON.parse(await readFile(backupPath, 'utf8')).decks.length;
+          } catch {
+            return 0;
+          }
+        })
+        .toBe(1);
+      expect(JSON.parse(await readFile(backupPath, 'utf8')).reviews).toEqual(
+        completed.reviews,
+      );
+    });
+    await check(
+      'Mac native speech produces valid PCM audio and rejects invalid input',
+      async () => {
+        const result = await page.evaluate(() =>
+          window.wordnestDesktop.speak('resilient'),
+        );
+        expect(result.ok, JSON.stringify(result)).toBe(true);
+        const profile = await app.evaluate(({ app }) =>
+          app.getPath('userData'),
+        );
+        const wave = await readFile(path.join(profile, 'speech-test.wav'));
+        expect(wave.subarray(0, 4).toString()).toBe('RIFF');
+        expect(wave.length).toBeGreaterThan(1000);
+        expect(
+          await page.evaluate(() =>
+            window.wordnestDesktop.speak('x'.repeat(501)),
+          ),
+        ).toEqual({ ok: false, error: 'invalid-text' });
+      },
+    );
+    await check(
+      'Mac closing a window keeps the app available and Dock activation restores data',
+      async () => {
+        const closed = page.waitForEvent('close');
+        await app.evaluate(({ BrowserWindow }) =>
+          BrowserWindow.getAllWindows()[0].close(),
+        );
+        await closed;
+        expect(
+          await app.evaluate(
+            ({ BrowserWindow }) => BrowserWindow.getAllWindows().length,
+          ),
+        ).toBe(0);
+        const reopened = app.waitForEvent('window');
+        await app.evaluate(({ app }) => app.emit('activate'));
+        page = await reopened;
+        await expect(
+          page.getByRole('button', { name: 'Nhập file TXT', exact: true }),
+        ).toBeVisible();
+        expect(await stored()).toEqual(completed);
+      },
+    );
+    await check(
+      'Mac quit and cold relaunch preserve quiz and review progress',
+      async () => {
+        const executablePath = process.env.WORDNEST_EXECUTABLE;
+        await app.close();
+        app = undefined;
+        app = await electron.launch({
+          executablePath,
+          args: ['--wordnest-smoke'],
+          env: desktopEnv,
+        });
+        page = await app.firstWindow();
+        await expect(
+          page.getByRole('button', { name: 'Nhập file TXT', exact: true }),
+        ).toBeVisible();
+        expect(await stored()).toEqual(completed);
+      },
+    );
+  }
   if (!desktop) {
     const corrupted = await browser.newContext();
     await corrupted.addInitScript(() =>
@@ -262,7 +375,11 @@ try {
     JSON.stringify(
       {
         verifiedAt: new Date().toISOString(),
-        platform: desktop ? 'Electron Windows x64' : browser.version(),
+        platform: desktop
+          ? await app.evaluate(
+              () => 'Electron ' + process.platform + ' ' + process.arch,
+            )
+          : browser.version(),
         fixture:
           'examples/wordnest-demo.txt (4 authored pairs; not learner data)',
         checks,

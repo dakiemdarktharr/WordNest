@@ -29,23 +29,49 @@ export function stopSpeech() {
     active = undefined;
   }
 }
-export function speakText(text, waveFile) {
-  if (typeof text !== 'string' || !text.trim() || text.length > 500)
-    return Promise.resolve({ ok: false, error: 'invalid-text' });
-  stopSpeech();
-  return new Promise((resolve) => {
-    const executable = path.join(
+// Text is sent on stdin: vocabulary never becomes shell code or command options.
+export function speechRequest(text, waveFile, platform = process.platform) {
+  if (platform === 'darwin')
+    return {
+      executable: '/usr/bin/say',
+      args: [
+        '-v',
+        'Samantha',
+        '-r',
+        '170',
+        '-f',
+        '-',
+        ...(waveFile
+          ? ['-o', waveFile, '--file-format=WAVE', '--data-format=LEI16@22050']
+          : []),
+      ],
+      input: text,
+    };
+  if (platform !== 'win32') return null;
+  return {
+    executable: path.join(
       process.env.SystemRoot || 'C:\\Windows',
       'System32',
       'WindowsPowerShell',
       'v1.0',
       'powershell.exe',
-    );
-    const child = spawn(
-      executable,
-      ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', script],
-      { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] },
-    );
+    ),
+    args: ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', script],
+    input: JSON.stringify({ text, ...(waveFile ? { waveFile } : {}) }),
+  };
+}
+export function speakText(text, waveFile) {
+  if (typeof text !== 'string' || !text.trim() || text.length > 500)
+    return Promise.resolve({ ok: false, error: 'invalid-text' });
+  const request = speechRequest(text, waveFile);
+  if (!request)
+    return Promise.resolve({ ok: false, error: 'unsupported-platform' });
+  stopSpeech();
+  return new Promise((resolve) => {
+    const child = spawn(request.executable, request.args, {
+      windowsHide: true,
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
     const current = { child, cancelled: false };
     active = current;
     let output = '';
@@ -66,17 +92,20 @@ export function speakText(text, waveFile) {
     });
     child.on('error', () => finish({ ok: false, error: 'unavailable' }));
     child.stdin.on('error', () => finish({ ok: false, error: 'unavailable' }));
-    child.on('close', () => {
+    child.on('close', (code) => {
       if (current.cancelled) return finish({ ok: true, cancelled: true });
+      if (process.platform === 'darwin')
+        return finish(
+          code === 0
+            ? { ok: true, voice: 'Samantha' }
+            : { ok: false, error: 'unavailable' },
+        );
       try {
         finish(JSON.parse(output.replace(/^\uFEFF/, '').trim()));
       } catch {
         finish({ ok: false, error: 'unavailable' });
       }
     });
-    child.stdin.end(
-      JSON.stringify({ text, ...(waveFile ? { waveFile } : {}) }),
-      'utf8',
-    );
+    child.stdin.end(request.input, 'utf8');
   });
 }

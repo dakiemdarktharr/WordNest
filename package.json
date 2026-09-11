@@ -1,6 +1,6 @@
 {
   "name": "wordnest",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -19,10 +19,11 @@
     "desktop:pack": "npm run desktop:prepare && electron-builder --projectDir desktop-app --config ../electron-builder.config.mjs --dir --win",
     "desktop:dist": "npm run desktop:prepare && electron-builder --projectDir desktop-app --config ../electron-builder.config.mjs --win",
     "test:desktop": "node scripts/desktop-smoke.mjs",
-    "test:security": "node --test tests/desktop-security.test.mjs",
+    "test:security": "node --test tests/*.test.mjs",
     "test:journey": "node scripts/journey-check.mjs",
     "measure": "node --experimental-strip-types scripts/measure.mjs",
-    "desktop:dist:mac": "npm run desktop:prepare && electron-builder --projectDir desktop-app --config ../electron-builder.config.mjs --mac dmg zip --x64 --arm64"
+    "desktop:dist:mac": "npm run desktop:prepare && electron-builder --projectDir desktop-app --config ../electron-builder.config.mjs --mac dmg zip --publish never",
+    "test:mac": "node scripts/macos-package-check.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

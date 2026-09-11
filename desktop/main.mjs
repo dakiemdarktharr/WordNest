@@ -17,7 +17,7 @@ const smoke = process.argv.includes('--wordnest-smoke');
 if (smoke && process.env.WORDNEST_TEST_USER_DATA)
   app.setPath('userData', path.resolve(process.env.WORDNEST_TEST_USER_DATA));
 app.setName('WordNest');
-app.setAppUserModelId('vn.wordnest.desktop');
+if (process.platform === 'win32') app.setAppUserModelId('vn.wordnest.desktop');
 protocol.registerSchemesAsPrivileged([
   {
     scheme: 'wordnest',
@@ -32,7 +32,7 @@ else {
       if (window.isMinimized()) window.restore();
       window.show();
       window.focus();
-    }
+    } else app.emit('activate');
   });
   app
     .whenReady()
@@ -114,22 +114,34 @@ else {
           event.preventDefault(),
         );
         window.on('closed', () => {
+          stopSpeech();
           window = undefined;
         });
         void window.loadURL('wordnest://app/');
       };
       Menu.setApplicationMenu(
         Menu.buildFromTemplate([
+          ...(process.platform === 'darwin' ? [{ role: 'appMenu' }] : []),
           {
             label: 'Tệp',
             submenu: [
               {
+                id: 'import-txt',
                 label: 'Nhập file TXT…',
                 accelerator: 'CmdOrCtrl+O',
-                click: () => window?.webContents.send('wordnest:import'),
+                click: () => {
+                  if (!window) {
+                    createWindow();
+                    window.webContents.once('did-finish-load', () =>
+                      window?.webContents.send('wordnest:import'),
+                    );
+                  } else window.webContents.send('wordnest:import');
+                },
               },
               { type: 'separator' },
-              { label: 'Thoát', role: 'quit' },
+              process.platform === 'darwin'
+                ? { label: 'Đóng cửa sổ', role: 'close' }
+                : { label: 'Thoát', role: 'quit' },
             ],
           },
           {
@@ -154,18 +166,19 @@ else {
               { label: 'Toàn màn hình', role: 'togglefullscreen' },
             ],
           },
+          ...(process.platform === 'darwin' ? [{ role: 'windowMenu' }] : []),
           {
             label: 'Trợ giúp',
             submenu: [
               {
                 label: 'Giới thiệu WordNest',
                 click: () => {
-                  void dialog.showMessageBox(window, {
+                  void dialog.showMessageBox({
                     type: 'info',
                     title: 'WordNest',
                     message: `WordNest ${app.getVersion()}`,
                     detail:
-                      'Học từ vựng từ file TXT.\nDữ liệu và tiến độ được lưu trên máy này.\n\nDùng Sao lưu để chuyển dữ liệu sang máy khác.\nPhát âm phụ thuộc giọng tiếng Anh có trên Windows.',
+                      'Học từ vựng từ file TXT.\nDữ liệu và tiến độ được lưu trên máy này.\n\nDùng Sao lưu để chuyển dữ liệu sang máy khác.\nPhát âm phụ thuộc giọng tiếng Anh có trên thiết bị.',
                   });
                 },
               },
@@ -183,6 +196,8 @@ else {
       app.quit();
     });
 }
-app.on('window-all-closed', () => app.quit());
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
 
 app.on('before-quit', stopSpeech);

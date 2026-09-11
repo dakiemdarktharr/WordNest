@@ -19,6 +19,10 @@ const config = {
     signAndEditExecutable: true,
   },
   mac: {
+    identity: '-',
+    hardenedRuntime: true,
+    entitlements: '../build-resources/entitlements.mac.plist',
+    entitlementsInherit: '../build-resources/entitlements.mac.plist',
     target: ['dmg', 'zip'],
     icon: '../build-resources/icon.png',
     category: 'public.app-category.education',

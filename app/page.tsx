@@ -1009,8 +1009,8 @@ export default function Home() {
                 <h2>Học thuận tiện hơn</h2>
                 <p>
                   <b>Phát âm:</b> Bấm biểu tượng loa cạnh từ tiếng Anh. Bản
-                  desktop dùng giọng tiếng Anh của Windows. Bản web phụ thuộc
-                  giọng của trình duyệt; một số giọng cần mạng.
+                  desktop dùng giọng tiếng Anh của hệ điều hành. Bản web phụ
+                  thuộc giọng của trình duyệt; một số giọng cần mạng.
                 </p>
                 <p>
                   <b>Ôn cách quãng:</b> Lật thẻ rồi chọn Chưa nhớ / Khó / Đã nhớ
