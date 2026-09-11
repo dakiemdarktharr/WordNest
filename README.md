@@ -6,6 +6,12 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 **No generative AI or model provider is used.** “Intelligent” refers to explicit scheduling rules, not an LLM, trained model, or measured prediction of memory. Windows text-to-speech and optional browser WebMCP hooks are not AI content-generation features.
 
+## Install the Windows desktop app
+
+**For learners: [Download WordNest-Setup-0.2.1-x64.exe](https://github.com/dakiemdarktharr/quizziz_clone/releases/download/v0.2.1/WordNest-Setup-0.2.1-x64.exe)**, run the installer, then open **WordNest** from Desktop or Start Menu. No Node.js, terminal, browser or localhost server is needed to use the installed app. Windows 10/11 x64 is the supported target; the installer is unsigned.
+
+[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.1)
+
 ## See the workflow
 
 These are actual screenshots of the production web build, captured by the automated demo using [four authored vocabulary pairs](examples/wordnest-demo.txt). The screenshots are not mockups; the displayed 75% is a scripted 3/4 quiz result, not learner research or model accuracy. The same journey is checked separately in Electron.
@@ -48,7 +54,7 @@ flowchart LR
 
 No backend, API key, account, cloud synchronization, or external content service is needed for the desktop study workflow.
 
-## Setup and run
+## Development setup and run
 
 Prerequisites for development: **Node.js 24**, npm, and Git. Windows 10/11 x64 is the supported desktop target. Install dependencies once with internet access:
 
@@ -176,7 +182,7 @@ Get-FileHash '.\release\WordNest-Setup-0.2.1-x64.exe' -Algorithm SHA256
 
 Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.
 
-[GitHub Releases](https://github.com/dakiemdarktharr/quizziz_clone/releases) contains the previously published **0.2.0** installer; it predates this quiz-scheduling update. This pass does not publish a new release or redeploy the web preview. The repo is private: distribute an installer separately if students do not have access.
+[GitHub Release v0.2.1](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.1) distributes the tested Windows installer, SHA256 checksum and demo TXT. The repository is currently public, so learners can download the installer directly. Choose the `.exe` asset; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
 
 The installer is **unsigned**, so Windows may show SmartScreen. Updates are manual. No macOS, Linux or Windows ARM64 installer has been verified. Installer hashes vary across independently produced packages; the committed hash identifies the measured local artifact only.
 
