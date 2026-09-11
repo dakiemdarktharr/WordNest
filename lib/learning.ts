@@ -289,3 +289,41 @@ export function makeSession(
 }
 export const DEMO_TXT =
   '1. resilient\n[1] dễ tổn thương\n[2*] kiên cường, có khả năng phục hồi\n[3] do dự\n[4] thờ ơ\nGiải thích: She remained resilient through difficult times. — Cô ấy vẫn kiên cường qua những lúc khó khăn.\n\n2. curious\n[1*] tò mò, ham tìm hiểu\n[2] tức giận\n[3] bất cẩn\n[4] buồn ngủ\nGiải thích: Stay curious and keep asking questions. — Hãy luôn ham tìm hiểu và tiếp tục đặt câu hỏi.\n\n3. accomplish\n[1] trì hoãn\n[2] từ bỏ\n[3*] hoàn thành, đạt được\n[4] quên đi\nGiải thích: You can accomplish your goals with practice.\n\n4. thoughtful\n[1] vội vàng\n[2] ồn ào\n[3] ích kỷ\n[4*] chu đáo, biết quan tâm\nGiải thích: That was a thoughtful gift. — Đó là một món quà chu đáo.\n\n5. opportunity\n[1*] cơ hội\n[2] khó khăn\n[3] lời hứa\n[4] thói quen\n\n6. consistent\n[1] thay đổi thất thường\n[2*] nhất quán, đều đặn\n[3] hiếm có\n[4] ngắn ngủi\n\n7. embrace\n[1] né tránh\n[2] phản đối\n[3*] đón nhận\n[4] chia nhỏ\n\n8. meaningful\n[1] vô nghĩa\n[2] ngẫu nhiên\n[3] phức tạp\n[4*] có ý nghĩa';
+
+/** Apply a submitted quiz to the same deterministic scheduler used by flashcards.
+ * Correct = Good; wrong or unanswered = Again. Re-submitting is a no-op.
+ */
+export function completeSession(
+  data: StudyData,
+  sessionId: string,
+  now: number,
+): StudyData {
+  const session = data.sessions.find((s) => s.id === sessionId);
+  if (!session || session.finishedAt !== null) return data;
+  const reviews = { ...data.reviews };
+  const answers = { ...session.answers };
+  for (const question of session.questions) {
+    const answer = session.answers[question.id];
+    const correct = Boolean(
+      answer &&
+      (session.mode === 'write'
+        ? gradeWritten(question, answer.typed ?? '', session.reverse)
+        : grade(question, answer.selected)),
+    );
+    if (answer) answers[question.id] = { ...answer, correct };
+    const key = reviewKey(session.deckId, question.id);
+    const previous = reviews[key] ?? emptyReview();
+    reviews[key] = {
+      ...schedule(previous, correct ? 2 : 0, now),
+      correct: previous.correct + (correct ? 1 : 0),
+      wrong: previous.wrong + (correct ? 0 : 1),
+    };
+  }
+  return {
+    ...data,
+    reviews,
+    sessions: data.sessions.map((s) =>
+      s.id === sessionId ? { ...s, answers, finishedAt: now } : s,
+    ),
+  };
+}

@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-09-11T08:49:26.543Z",
+  "platform": "152.0.4191.66",
+  "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+  "checks": [
+    "explicit offline behavior",
+    "invalid UTF-8 is rejected visibly",
+    "malformed TXT cannot be committed",
+    "imports four vocabulary pairs",
+    "flashcard schedules first review in one day",
+    "quiz grades 3/4 and updates the same review schedule",
+    "reload preserves completed quiz and review dates exactly",
+    "corrupt storage shows recovery guidance and preserves original bytes",
+    "failed writes do not report a successful import"
+  ],
+  "errors": [],
+  "readyMs": 1071,
+  "elapsedMs": 3678,
+  "score": {
+    "correct": 3,
+    "total": 4
+  },
+  "intervalsDays": {
+    "resilient": 2,
+    "curious": 0.0006944444444444445
+  }
+}

@@ -1,0 +1,4 @@
+resilient :: kiên cường
+curious :: tò mò
+thoughtful :: chu đáo
+consistent :: nhất quán

@@ -282,8 +282,8 @@ export function Flashcards({
             Đánh dấu <Star size={13} /> những từ muốn dành thêm thời gian.
           </div>
           <p className="small muted">
-            Lịch ôn chỉ lưu trên trình duyệt này. Mở app và chọn “Đến hạn ôn”
-            mỗi ngày.
+            Lịch ôn chỉ lưu trên thiết bị này. Mở app và chọn “Đến hạn ôn” mỗi
+            ngày.
           </p>
         </aside>
       </div>

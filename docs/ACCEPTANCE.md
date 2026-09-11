@@ -1,32 +1,43 @@
-# Phạm vi và kiểm chứng WordNest 0.2.0
+# WordNest 0.2.1 — acceptance record
 
-## Yêu cầu
+Verified locally on 2026-09-11. The working tree was clean before this pass; the existing React/Vite/Electron app and data format were retained.
 
-- App desktop Windows, có installer EXE, icon riêng lấy cảm hứng từ thẻ xếp chồng người dùng gửi.
-- Giáo viên gửi TXT qua kênh khác; học viên nhập file và học độc lập.
-- Tập trung từ vựng tiếng Anh, không tài khoản hoặc máy chủ lưu dữ liệu lớp.
-- Giữ flashcard, ôn cách quãng, luyện gõ, ghép cặp, quiz, lịch sử và sao lưu của bản trước.
+## Scope completed
 
-## Kiểm tra tự động
+- Original WordNest product branding in UI, package metadata, README and real demo screenshots.
+- A complete import → flashcard → quiz → spaced-repetition update journey. The new `completeSession` operation grades submitted answers and applies the existing scheduler exactly once.
+- Clear desktop/web offline boundaries and visible failure states. No AI model or content-generation feature was added or claimed.
+- 10 additional regression tests for TXT size boundaries, review intervals/caps, scoring, idempotence and persistence failures.
 
-- 20 kiểm thử parser, chấm điểm, lịch ôn, xác thực sao lưu và ghi dữ liệu.
-- 2 kiểm thử giao thức tài nguyên desktop: đúng origin, ngăn truy cập bên ngoài và đường dẫn vượt thư mục.
-- TypeScript, Oxlint và Vite production build.
-- Playwright mở trực tiếp WordNest.exe với hồ sơ thử nghiệm riêng: nhập file TXT có bốn đáp án và C đúng; chọn C và chấm đúng; đóng/mở app, kiểm tra phiên học còn nguyên; lật thẻ, đánh dấu, lên lịch ôn; xuất JSON và xác minh nội dung file trên đĩa.
-- Xác minh renderer sandbox, context isolation, không có Node.js, chặn kết nối Internet.
-- Phát âm desktop qua IPC giới hạn: tạo WAV thật với giọng tiếng Anh Windows, kiểm tra RIFF và dữ liệu âm thanh; từ chối văn bản quá giới hạn.
-- Cài EXE vào thư mục thử nghiệm trong outputs, kiểm tra shortcut Desktop và Start Menu, chạy kiểm thử trên app đã cài, gỡ bản cài thử và xác minh file chạy đã được xóa.
+## Results
 
-Chạy `npm run desktop:dist` rồi `./scripts/installer-smoke.ps1` để kiểm chứng installer. Script từ chối nếu máy đã cài WordNest để tránh thay thế bản đang dùng. Kiểm thử thường chỉ cần `npm run test:desktop` trên bản đóng gói. Bằng chứng cục bộ được lưu trong outputs/installer-result.json và outputs/desktop-smoke-*/result.json; CI Windows lưu artifact kiểm thử.
+| Check | Result | Evidence |
+| --- | --- | --- |
+| `npm test` | 30 passed | `tests/learning.test.ts`, `tests/workflow.test.ts` |
+| `npm run test:security` | 2 passed | `tests/desktop-security.test.mjs` |
+| `npm run lint` | Passed | Oxlint application and scripts |
+| `npm run build` | Passed | TypeScript and Vite production build |
+| `npm run test:journey` | 9 assertion groups passed | [Web result](evidence/web-journey.json) |
+| `npm run test:journey -- --desktop` | 7 assertion groups passed | [Electron result](evidence/desktop-journey.json) |
+| `npm run desktop:dist` | Windows x64 NSIS installer created | [Measured size/hash](evidence/metrics.json) |
+| `./scripts/installer-smoke.ps1` | Installed app, both shortcuts, legacy and full journey checks, uninstall passed | [Installer result](evidence/installer.json) |
 
-Kiểm thử âm thanh dùng file WAV để không phát tiếng qua loa trong lúc chạy tự động. Đã kiểm tra ảnh chụp giao diện quiz từ Electron; chưa đánh giá âm thanh bằng tai, mọi cấu hình Windows, screen reader, macOS hoặc Linux.
+The installed-app speech test generated a 79,618-byte WAV with Microsoft David Desktop. This checks synthesis, not human-assessed pronunciation or playback through speakers. The web journey runs on installed Edge; CI is configured for Playwright Chromium. Screenshot states were visually inspected before inclusion in `docs/demo/`.
 
-## Giới hạn bàn giao
+The scripted quiz deliberately scores 3/4. The previously reviewed first word advances from one day to two days; the incorrect second word is due one minute after submission. Reload preserves the completed session and exact due timestamps. The web checks also reject invalid UTF-8, block malformed input, surface corrupted saved JSON and verify that quota failures do not claim a successful import.
 
-- Bản phát hành là Windows x64; chưa cung cấp installer macOS/Linux/ARM64.
-- Installer chưa ký chứng chỉ, có thể xuất hiện Windows SmartScreen. Không tự cập nhật; cài bản mới thủ công.
-- Dữ liệu desktop nằm trong hồ sơ WordNest của người dùng Windows. Bản web cũ có kho dữ liệu khác; chuyển bằng JSON. Gỡ app giữ dữ liệu để cài lại vẫn dùng được.
-- Giọng đọc phụ thuộc giọng tiếng Anh Windows và quyền chạy PowerShell trên máy trường; app báo lỗi nếu không khả dụng. Không cần Internet để học hoặc dùng giọng Windows đã cài.
-- Kho localStorage có hạn mức; khi đầy, app báo lỗi và không báo lưu thành công. Sao lưu thường xuyên.
-- Repo và release GitHub hiện riêng tư; giáo viên có thể gửi EXE qua kênh phân phối riêng cho học viên.
-- Không tổng hợp điểm toàn lớp hoặc phòng đồng bộ. Không có service worker cho bản web; bản desktop chứa toàn bộ giao diện trong installer.
+## Measurements and reproducibility
+
+`npm run measure` records pure-function timings on generated 10/100/1,000-pair inputs, scheduling of 1,000 reviews, actual JS/CSS sizes, gzip sizes and the installer SHA-256. It records the machine and hashes of listed source inputs. These are local engineering measurements, not a learner dataset or educational-effectiveness study. See [metrics](evidence/metrics.json) and the README for the measurement method.
+
+Automated journey output contains launch and elapsed times from a single run. These include test-tool/process overhead and screenshots; they are **not startup performance benchmarks**.
+
+## Remaining limitations
+
+- No validated retention/adoption data, generative AI, trained scheduler, or teacher analytics.
+- Desktop supports offline cold starts through bundled assets; web supports an already loaded session only and has no service worker.
+- Simple scheduling rules may expand an interval repeatedly within one day. Unanswered submitted questions count as incorrect; completed older sessions are not retroactively rescheduled.
+- Storage is quota-limited and local to the device/origin. JSON backup is manual. No cloud sync or background reminders.
+- Windows x64 installer is unsigned and manually updated. Other OS/architectures are not verified. The published 0.2.0 release predates this source update; a new release is not published in this pass.
+- Windows speech may be unavailable or slow; an earlier CI run timed out and passed on rerun. Screen-reader, mobile and broad Windows configuration testing remain incomplete.
+- Existing UI dependencies and Electron are retained rather than aggressively optimized.

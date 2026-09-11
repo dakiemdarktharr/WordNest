@@ -26,6 +26,8 @@ try {
   $env:WORDNEST_EXECUTABLE = $installedExe
   node (Join-Path $repoRoot 'scripts\desktop-smoke.mjs')
   if ($LASTEXITCODE -ne 0) { throw 'Installed app smoke test failed.' }
+  node (Join-Path $repoRoot 'scripts\journey-check.mjs') --desktop
+  if ($LASTEXITCODE -ne 0) { throw 'Installed app vocabulary journey failed.' }
 } finally {
   $env:WORDNEST_EXECUTABLE = $priorExe
   if (Test-Path -LiteralPath $uninstaller) {

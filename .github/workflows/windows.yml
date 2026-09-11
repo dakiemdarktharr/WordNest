@@ -12,6 +12,7 @@ on:
       - 'public/**'
       - 'scripts/**'
       - 'tests/**'
+      - 'examples/**'
       - 'build-resources/**'
       - 'package*.json'
       - 'index.html'
@@ -29,6 +30,7 @@ on:
       - 'public/**'
       - 'scripts/**'
       - 'tests/**'
+      - 'examples/**'
       - 'build-resources/**'
       - 'package*.json'
       - 'index.html'
@@ -66,4 +68,5 @@ jobs:
           path: |
             outputs/desktop-smoke-*/
             outputs/installer-result.json
+            outputs/journey-desktop/result.json
           retention-days: 7

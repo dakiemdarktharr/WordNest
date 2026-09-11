@@ -1,4 +1,5 @@
-'use client';
+import { LearningEnvironment } from '@/components/learning-environment';
+
 import { useEffect, useRef, useState } from 'react';
 import {
   BookOpen,
@@ -293,7 +294,7 @@ export default function Home() {
           <span className="brand-mark">
             <img src="./wordnest-icon.png" width="30" height="30" alt="" />
           </span>
-          word<span className="brand-light">nest</span>
+          Word<span className="brand-light">Nest</span>
           <span className="beta">HỌC THEO CÁCH CỦA BẠN</span>
         </button>
         <div className="inline-controls">
@@ -314,6 +315,7 @@ export default function Home() {
         </div>
       </header>
       <main className="workspace" id="main-content">
+        <LearningEnvironment />
         {storageError && (
           <div className="error storage-error" role="alert">
             <p>{storageError}</p>
@@ -826,7 +828,7 @@ export default function Home() {
                 <ShieldCheck size={18} />
                 <p>
                   Không tài khoản. Không tải TXT lên máy chủ. Bộ từ và tiến độ
-                  nằm trong trình duyệt của bạn.
+                  nằm trên thiết bị của bạn.
                 </p>
               </div>
             </TabsContent>
@@ -1006,13 +1008,15 @@ export default function Home() {
               <section className="panel guide-notes">
                 <h2>Học thuận tiện hơn</h2>
                 <p>
-                  <b>Phát âm:</b> Bấm biểu tượng loa cạnh từ tiếng Anh. Giọng
-                  đọc phụ thuộc trình duyệt và thiết bị; một số giọng cần mạng.
+                  <b>Phát âm:</b> Bấm biểu tượng loa cạnh từ tiếng Anh. Bản
+                  desktop dùng giọng tiếng Anh của Windows. Bản web phụ thuộc
+                  giọng của trình duyệt; một số giọng cần mạng.
                 </p>
                 <p>
                   <b>Ôn cách quãng:</b> Lật thẻ rồi chọn Chưa nhớ / Khó / Đã nhớ
-                  / Rất dễ. Vào “Đến hạn ôn” mỗi ngày; lịch này là gợi ý học,
-                  không phải dự đoán chắc chắn khả năng nhớ.
+                  / Rất dễ. Nộp quiz cũng cập nhật lịch: câu đúng = Đã nhớ, sai
+                  hoặc bỏ trống = Chưa nhớ. Vào “Đến hạn ôn” mỗi ngày; lịch này
+                  là gợi ý học, không phải dự đoán chắc chắn khả năng nhớ.
                 </p>
                 <p>
                   <b>Luyện gõ:</b> Mặc định hiện nghĩa và yêu cầu gõ từ tiếng
@@ -1039,7 +1043,7 @@ export default function Home() {
         )}
         <footer className="app-footer">
           <span>
-            wordnest <span className="muted">/ Góc học từ vựng của bạn</span>
+            WordNest <span className="muted">/ Góc học từ vựng của bạn</span>
           </span>
           <div className="inline-controls">
             <button

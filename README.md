@@ -1,139 +1,204 @@
 # WordNest
 
-Ứng dụng học từ vựng tiếng Anh từ file TXT, lấy cảm hứng từ Quizizz, Quizlet và Kahoot!. Dành cho học viên tự học độc lập: giáo viên gửi file qua kênh riêng, học viên nhập vào app.
+**An offline-first vocabulary study app with an intelligent, deterministic spaced-repetition workflow.** Import a teacher's TXT file, study flashcards, take a quiz, and keep the next review dates on your own device. The interface is in Vietnamese; the primary distribution is a Windows desktop app.
 
-**Bản chính là ứng dụng desktop Windows 10/11 (64-bit).** Không cần tài khoản, Node.js hoặc kết nối mạng để nhập TXT và học. Bộ từ, lịch ôn và kết quả lưu trong hồ sơ riêng của WordNest trên máy.
+WordNest is an original product for an English teacher who distributes vocabulary files outside the app. Learners need a simple way to turn those files into practice without creating accounts, uploading their materials, or depending on classroom Wi-Fi. The existing React/Electron app is retained; this focused update connects quiz results to the review scheduler and makes the core workflow demonstrable.
 
-## Cài đặt Windows
+**No generative AI or model provider is used.** “Intelligent” refers to explicit scheduling rules, not an LLM, trained model, or measured prediction of memory. Windows text-to-speech and optional browser WebMCP hooks are not AI content-generation features.
 
-1. Tải **WordNest-Setup-0.2.0-x64.exe** từ [GitHub Releases](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.2.0) hoặc file giáo viên gửi. Repo hiện riêng tư: học viên không có quyền repo cần nhận file EXE qua kênh khác.
-2. Mở bộ cài, chọn thư mục và cài cho tài khoản Windows hiện tại. Không cần quyền quản trị.
-3. Mở **WordNest** từ Desktop hoặc Start Menu. Nhấn **Ctrl+O** để nhập TXT.
-4. Gỡ qua **Settings → Apps → WordNest → Uninstall**. Hồ sơ học được giữ lại để cài lại không mất tiến độ.
+## See the workflow
 
-Bộ cài chưa ký chứng chỉ nhà phát hành, nên Windows có thể hiện cảnh báo SmartScreen. Chỉ dùng file từ nguồn giáo viên cung cấp và có thể đối chiếu SHA-256 trong release. Bản mới được cài thủ công bằng bộ cài mới; app chưa tự cập nhật.
+These are actual screenshots of the production web build, captured by the automated demo using [four authored vocabulary pairs](examples/wordnest-demo.txt). The screenshots are not mockups; the displayed 75% is a scripted 3/4 quiz result, not learner research or model accuracy. The same journey is checked separately in Electron.
 
-Dữ liệu desktop nằm ở **%APPDATA%\WordNest** (Chromium localStorage). Không sửa file nội bộ trực tiếp; dùng **Xuất sao lưu** / **Nhập sao lưu**. Để chuyển từ bản web cũ, xuất JSON trên web rồi nhập JSON vào desktop.
+| Import and validate TXT | Flip and rate a flashcard |
+| --- | --- |
+| ![WordNest TXT preview](docs/demo/01-import.png) | ![WordNest flashcard answer and ratings](docs/demo/02-flashcard.png) |
 
-## Sử dụng
+| Answer a quiz | Review locally saved progress |
+| --- | --- |
+| ![WordNest quiz feedback](docs/demo/03-quiz.png) | ![WordNest progress after a 3 of 4 quiz](docs/demo/05-progress.png) |
 
-1. Mở WordNest, bấm **Nhập file TXT**.
-2. Chọn file hoặc dán nội dung, nhập tên bộ từ.
-3. Kiểm tra bản xem trước và sửa các lỗi định dạng nếu có.
-4. Chọn Flashcard, Ghép cặp, Luyện tập, Luyện gõ hoặc Kiểm tra.
-5. Dùng **Xuất sao lưu** khi cần chuyển dữ liệu sang thiết bị khác.
+[Full quiz result screenshot](docs/demo/04-results.png) · [Demo details and provenance](docs/demo/README.md)
 
-## Định dạng TXT
+## Architecture
 
-Một câu mới bắt đầu bằng số và dấu chấm ở đầu dòng. Dấu * đánh dấu đáp án đúng:
+```mermaid
+flowchart LR
+  TXT[Local UTF-8 TXT] --> Parser[TypeScript parser and validation]
+  Parser --> UI[React study interface]
+  UI --> Grade[Quiz grading]
+  UI --> Schedule[Flashcard ratings]
+  Grade --> Schedule
+  Schedule --> Store[Validated localStorage state]
+  Store --> UI
+  Store --> Backup[JSON export and restore]
+  Electron[Electron shell and bundled assets] --> UI
+  Electron --> Speech[Windows System.Speech]
+```
 
-~~~text
-1. câu hỏi 1? [1] A [2] B [3*] C [4] D
+| Boundary | Implementation |
+| --- | --- |
+| Web entry | `index.html` → `app/main.tsx` → `app/page.tsx`; React, TypeScript, Vite |
+| Study rules | `lib/learning.ts`: TXT parsing, quiz generation/scoring, scheduling, idempotent quiz submission |
+| Persistence | `lib/storage.ts` validates imported state; `components/use-study-data.ts` commits UI state only after a successful localStorage write |
+| UI | Existing flashcard, quiz, writing and matching components; shared controls and error messages |
+| Desktop entry | `desktop/main.mjs` serves bundled assets at `wordnest://app/`; sandboxed renderer, context isolation, no renderer Node access |
+| Native boundary | A narrow preload bridge opens import UI and requests speech; text travels as JSON to a fixed Windows speech script |
+| Packaging | `scripts/prepare-desktop.mjs` stages the built UI; Electron Builder produces a per-user NSIS installer |
 
-2. curious
-[1] buồn ngủ
-[2*] tò mò
-[3] lo lắng
-[4] tức giận
-Giải thích: Stay curious and keep learning.
-~~~
+No backend, API key, account, cloud synchronization, or external content service is needed for the desktop study workflow.
 
-Mẫu đầu tiên tạo một câu có bốn lựa chọn và C là đáp án đúng. Cũng chấp nhận dạng [3\*] có dấu gạch chéo trước dấu sao. Nếu nhiều đáp án được đánh dấu, học viên phải chọn đúng và đủ để được tính đúng.
+## Setup and run
 
-Với từ vựng, có thể dùng cách ngắn hơn, mỗi dòng một cặp:
+Prerequisites for development: **Node.js 24**, npm, and Git. Windows 10/11 x64 is the supported desktop target. Install dependencies once with internet access:
 
-~~~text
-apple :: quả táo
-curious :: tò mò
-resilient :: kiên cường
-thoughtful :: chu đáo
-~~~
-
-App tự lấy nghĩa của các từ khác làm lựa chọn khi tạo quiz từ cặp từ–nghĩa. Cần ít nhất hai nghĩa khác nhau. Lựa chọn tự sinh chỉ phục vụ luyện tập; giáo viên có thể dùng dạng trắc nghiệm để tự kiểm soát phương án nhiễu.
-
-- File UTF-8, có hoặc không BOM; hỗ trợ CRLF/LF.
-- Tối đa 1 MB và 1.000 câu mỗi bộ; tối đa 200 bộ trong thư viện.
-- Dùng một định dạng trong mỗi file; không trộn dạng đánh số và dạng cặp.
-- Câu trắc nghiệm có 2–10 đáp án. Có thể xuống dòng trong nội dung.
-- Dòng Giải thích: hoặc Explanation: nằm sau các đáp án và là tùy chọn.
-- Không dùng số + dấu chấm ở đầu dòng trong phần nội dung phụ; dùng (1) để tránh nhầm câu mới.
-- Ký hiệu [số] được dành cho lựa chọn.
-- File mẫu có tại [examples](examples).
-
-## Các chế độ học
-
-| Chế độ | Hoạt động |
-|---|---|
-| Flashcard | Lật, đảo chiều, trộn, nghe từ tiếng Anh, đánh dấu và lọc thẻ |
-| Ôn cách quãng | Tự đánh giá Chưa nhớ / Khó / Đã nhớ / Rất dễ, lưu thời điểm ôn tiếp |
-| Luyện tập | Chọn đáp án, nhận phản hồi ngay, xem giải thích từ TXT |
-| Luyện gõ | Hiện nghĩa để gõ tiếng Anh hoặc đổi chiều; bỏ qua hoa/thường và khoảng trắng thừa |
-| Kiểm tra | Chọn số câu, trộn, đồng hồ tùy chọn, chuyển giữa các câu, nộp mới xem đáp án |
-| Ghép cặp | Ghép từ–nghĩa bằng chạm hoặc bàn phím, tối đa 6 cặp mỗi vòng |
-| Tiến độ | Lịch sử 30 phiên gần nhất, độ chính xác, từ đã sai, ôn lại câu sai, tải kết quả TXT |
-
-Luyện gõ dùng câu có một đáp án đúng. Chiều nghĩa → tiếng Anh phù hợp nhất khi phần câu hỏi là từ tiếng Anh, chẳng hạn curious. Dấu và dấu câu vẫn phải khớp nội dung bộ từ; ứng dụng không chấm tương đương ngữ nghĩa bằng AI.
-
-Lịch ôn là thuật toán xác định đơn giản: thẻ mới được hẹn lại sau 1 phút, 10 phút, 1 ngày hoặc 4 ngày tùy đánh giá; những lần nhớ tiếp theo tăng khoảng cách. Không gửi thông báo nền: học viên mở app và chọn **Đến hạn ôn**.
-
-## Lưu trữ
-
-- Bộ từ và các câu trả lời đã xác nhận được lưu trong hồ sơ thiết bị. Bài kiểm tra có thể tiếp tục sau khi tải lại.
-- Đồng hồ bài kiểm tra tiếp tục chạy khi đóng trang; khi quay lại sau hạn, bài được nộp.
-- Thống kê đếm các lượt đã nộp, không phải điểm của toàn lớp. Lịch sử từng phiên giữ tối đa 30 lượt; tổng số lần đúng/sai theo từ được tích lũy riêng.
-- Ghép cặp và duyệt thẻ là hoạt động luyện nhớ, không cộng vào điểm quiz.
-- Flashcard được coi là đã nhớ khi lịch ôn đã giãn tới ít nhất một ngày; đây là tự đánh giá.
-- Kho dữ liệu cục bộ có giới hạn lưu trữ. Khi ghi thất bại, app báo rõ và không báo lưu thành công.
-- Xóa dữ liệu trang, dùng cửa sổ riêng tư, đổi thiết bị hoặc đổi địa chỉ hosting có thể làm mất quyền truy cập dữ liệu cũ. Xuất JSON trước khi di chuyển.
-- Nhập JSON có xác nhận vì sẽ thay thế dữ liệu hiện tại. TXT trùng nội dung được mở lại để giữ tiến độ.
-- Chỉnh sửa nội dung bằng trình soạn TXT rồi nhập thành bộ mới; xuất TXT không chứa tiến độ.
-
-## Phát triển và tạo installer
-
-Cần Node.js 24 và npm. Trên Windows:
-
-~~~bash
+```powershell
 npm ci
+```
+
+Run the web development build:
+
+```powershell
+npm run dev
+```
+
+Open `http://127.0.0.1:3000/`. For the production web build:
+
+```powershell
+npm run build
+npm run start -- --port 4173
+```
+
+Open `http://127.0.0.1:4173/`. Serve `dist/` over HTTP; do not open its HTML directly with `file://`.
+
+Run the desktop app from source on Windows:
+
+```powershell
 npm run desktop
-~~~
+```
 
-Tạo bộ cài và kiểm thử file chạy:
+This builds the UI and opens Electron. No development web server is needed by the desktop app.
 
-~~~bash
+## Two-minute demo
+
+1. Choose **Nhập file TXT**, select `examples/wordnest-demo.txt`, and choose **Tạo bộ học**. The file contains four English/Vietnamese pairs.
+2. Open **Flashcard**, flip `resilient`, then choose **Đã nhớ**. Its first review is scheduled one day later.
+3. Return to the deck, turn off **Trộn thứ tự câu hỏi**, and choose **Bắt đầu luyện tập**. Answer `resilient` correctly, intentionally answer `curious` incorrectly, and answer the last two words correctly.
+4. Submit the quiz. Expect **3/4**, or **75%**. The already-rated `resilient` moves from a one-day interval to two days; `curious` is scheduled one minute after submission.
+5. Open **Tiến độ học**. Reload or reopen the app: the completed quiz and review dates remain. **Xuất sao lưu** exports JSON for moving to another device.
+
+Quiz option positions are shuffled; choose by answer text. Quiz submission applies **Good** to correct answers and **Again** to wrong/unanswered questions, exactly once per completed session. Previously completed sessions are not reprocessed when upgrading.
+
+See [TXT format](docs/TXT-FORMAT.md) for numbered multiple-choice questions, multiple correct answers, and validation limits.
+
+## Offline behavior and error handling
+
+| Environment or failure | Actual behavior |
+| --- | --- |
+| Installed desktop app | Bundled UI, TXT import, flashcards, quiz, reviews and JSON backup work without internet; renderer network access is blocked |
+| Web page already loaded | Can continue studying and saving with the network disabled; a visible status message explains this |
+| Reopening/reloading the web app offline | **Not guaranteed. There is no service worker.** Use desktop for offline cold starts |
+| Storage quota/access denied | Failed writes leave the previous in-memory and persisted state unchanged; the UI reports that the change was not saved |
+| Corrupt saved JSON | Recovery guidance is shown; existing bytes are preserved instead of silently replacing the library |
+| Another tab writes data | Further writes are blocked until reload to avoid silently overwriting another tab |
+| Invalid TXT/UTF-8 | Import errors are shown before creation; no partial deck is silently committed |
+| Speech unavailable | An error is shown; studying continues. Windows needs an installed English voice and permission to run PowerShell |
+
+Desktop data lives under `%APPDATA%\WordNest`; web data belongs to its browser origin. Transfer between them using JSON export/import. Uninstalling the desktop app preserves the profile. Backups remain the user's responsibility.
+
+## Verify and reproduce evidence
+
+```powershell
 npm test
 npm run test:security
 npm run lint
+npm run typecheck
+npm run build
+```
+
+For the production web journey, keep `npm run start -- --port 4173` running in one terminal, then run in a second terminal:
+
+```powershell
+npm run test:journey
+```
+
+The default browser is installed Microsoft Edge. To use Playwright Chromium instead:
+
+```powershell
+npx playwright install chromium
+$env:WORDNEST_BROWSER_CHANNEL = 'chromium'
+npm run test:journey
+```
+
+Windows packaging and checks:
+
+```powershell
 npm run desktop:dist
 npm run test:desktop
-~~~
+npm run test:journey -- --desktop
+./scripts/installer-smoke.ps1
+npm run measure
+```
 
-Bộ cài xuất vào **release/WordNest-Setup-0.2.0-x64.exe**; file chạy đã đóng gói tại **release/win-unpacked/WordNest.exe**. Lệnh build cần mạng để tải dependency và runtime Electron; app đã cài không cần các dependency bên ngoài. **npm run icon:build** chuyển icon nguồn thành PNG và ICO nhiều kích thước.
+`installer-smoke.ps1` installs into an isolated `outputs/` directory, checks both shortcuts, runs the desktop checks and the complete study journey, then uninstalls the test copy. It refuses to replace an existing WordNest installation. Use the packaged-app checks when WordNest is already installed. Speech testing synthesizes a WAV rather than playing through the speakers.
 
-Electron chỉ phục vụ tài nguyên đóng gói qua origin ổn định **wordnest://app/**. Renderer có sandbox, context isolation, không có Node.js; chặn điều hướng và kết nối Internet. TXT không được thực thi như HTML hoặc mã. File xuất dùng hộp thoại lưu của Windows.
+CI runs logic/security checks, type checking, lint, the production web journey, and a Windows installer journey. Generated profiles and binaries are ignored by Git. Screenshots/results are stored in `outputs/`; committed evidence is a dated snapshot, not a claim that future runs will have identical timing.
 
-Bản desktop phát âm ngoại tuyến qua System.Speech và giọng tiếng Anh cài sẵn của Windows, tối đa 500 ký tự mỗi lần. Nếu máy chưa có giọng tiếng Anh hoặc bị chính sách máy trường chặn PowerShell, app sẽ báo rõ. Bản web dùng Web Speech API. Việc nhập TXT, flashcard, quiz, ghép cặp và sao lưu đều hoạt động offline.
+## Measured evidence
 
-Có thể tiếp tục phát triển giao diện qua **npm run dev** và tạo bản web bằng **npm run build**. Bản web cần máy chủ HTTP và không có service worker; giới hạn này không áp dụng cho bản desktop đóng gói.
+Measured on **2026-09-11**, Windows x64 build 26200, AMD Ryzen AI 5 340, Node.js 24.18.0. Raw measurements, methodology and input hashes: [metrics.json](docs/evidence/metrics.json). Verification details: [acceptance record](docs/ACCEPTANCE.md).
 
-## Cấu trúc mã
+| Measurement | Observed result |
+| --- | --- |
+| Automated logic/persistence tests | 30 passed; 10 added for this slice |
+| Desktop protocol security tests | 2 passed |
+| Production web journey | 9 assertion groups passed, including offline study and storage-error cases |
+| Electron journey | 7 assertion groups passed, including quiz-to-review scheduling and persisted reload |
+| Windows installer | Install, Desktop/Start Menu shortcuts, installed-app checks and uninstall passed locally |
+| Parse 1,000 synthetic vocabulary pairs (26,779 UTF-8 bytes) | p50 **0.206 ms**, p95 **0.569 ms** |
+| Schedule 1,000 review records | p50 **0.046 ms**, p95 **0.056 ms** |
+| Production JavaScript | **445,487 bytes**; gzip **143,128 bytes** |
+| Production CSS | **191,154 bytes**; gzip **31,393 bytes** |
+| Windows x64 installer | **111,636,777 bytes** (~106.47 MiB) |
 
-- app/page.tsx: thư viện, điều hướng và thiết lập học.
-- components/: các hoạt động học và hộp thoại nhập.
-- components/ui/: các primitive Shadcn/Base UI đi kèm scaffold.
-- lib/learning.ts: parser, chấm điểm, tạo quiz và lịch ôn.
-- lib/storage.ts: xác thực bản sao lưu, lưu nguyên tử và phát hiện tab khác ghi dữ liệu.
-- tests/learning.test.ts: các kiểm thử logic và ranh giới dữ liệu.
-- docs/RESEARCH.vi.md: nghiên cứu nguồn chính thức và quyết định tính năng.
+Microbenchmarks run in one Node process: five warm-ups, then 25 timed runs; input generation is excluded. They measure pure parser/scheduler functions, not file-picker, disk, UI, startup or full-quiz latency. Gzip sizes use Node's default `gzipSync` settings. The demo fixture and generated benchmark inputs are not a learner dataset. No retention improvement, adoption, model accuracy, or statistically significant educational effect has been measured.
 
-Giao diện dùng React + TypeScript + Vite, vỏ desktop dùng Electron. Thư mục desktop/ chứa main process, preload giới hạn và bộ xử lý tài nguyên; electron-builder.config.mjs cấu hình NSIS. scripts/desktop-smoke.mjs kiểm thử trực tiếp app đã đóng gói.
+## Release and installation
 
-## Kiểm tra và giới hạn
+The source version in this branch is **0.2.1**. Build the verified local installer with:
 
-Đã kiểm tra mẫu đầu vào ban đầu, BOM/CRLF, dấu sao có escape, nhiều đáp án đúng, dữ liệu không hợp lệ, giới hạn câu, phương án nhiễu, chấm gõ, lịch ôn, bản sao lưu và xung đột ghi giữa các tab. CI chạy test, lint, TypeScript và production build.
+```powershell
+npm ci
+npm run desktop:dist
+& '.\release\WordNest-Setup-0.2.1-x64.exe'
+Get-FileHash '.\release\WordNest-Setup-0.2.1-x64.exe' -Algorithm SHA256
+```
 
-Kiểm thử desktop dùng Playwright để mở app đã đóng gói, nhập TXT, chấm đáp án, mở lại hồ sơ, lật thẻ và xuất sao lưu. Chưa kiểm chứng trên mọi cấu hình Windows hoặc thiết bị di động. WebMCP là phần hỗ trợ tùy chọn, tự phát hiện API; chưa xác minh trên trình duyệt có hỗ trợ. Hai công cụ chỉ đọc danh sách bộ từ hoặc mở hộp thoại nhập, không tự xuất dữ liệu ra bên ngoài.
+Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.
 
-Tài liệu tham khảo và phân tích tính năng: [Nghiên cứu Quizizz, Quizlet, Kahoot!](docs/RESEARCH.vi.md). WordNest dùng tên và giao diện riêng, không liên kết với các sản phẩm tham khảo.
+[GitHub Releases](https://github.com/dakiemdarktharr/quizziz_clone/releases) contains the previously published **0.2.0** installer; it predates this quiz-scheduling update. This pass does not publish a new release or redeploy the web preview. The repo is private: distribute an installer separately if students do not have access.
 
+The installer is **unsigned**, so Windows may show SmartScreen. Updates are manual. No macOS, Linux or Windows ARM64 installer has been verified. Installer hashes vary across independently produced packages; the committed hash identifies the measured local artifact only.
 
-Nguồn kỹ thuật desktop: [Electron security](https://www.electronjs.org/docs/latest/tutorial/security), [Electron custom protocol](https://www.electronjs.org/docs/latest/api/protocol), [NSIS installer](https://www.electron.build/nsis/), [Microsoft SpeechSynthesizer](https://learn.microsoft.com/en-us/dotnet/api/system.speech.synthesis.speechsynthesizer?view=netframework-4.8.1).
+## Product and technical decisions
+
+- **Offline desktop first:** teachers already distribute TXT independently; bundling the UI lets learners use that material without accounts or classroom connectivity. The cost is a larger installer and device-local data.
+- **Explainable spaced repetition:** short retries for forgotten words and expanding intervals for remembered words make review priorities inspectable. The simple deterministic heuristic is easy to test and does not claim trained or individualized memory prediction.
+- **One scheduler for cards and quizzes:** submitted answers feed the same schedule as flashcard ratings. An idempotent completion operation prevents double submission from inflating progress.
+- **LocalStorage with validated backups:** retained to avoid a storage rewrite in this focused slice. Writes are atomic at the key level, failures are visible, and JSON supports transfer. Quotas and lack of cross-device sync remain tradeoffs.
+- **No AI provider abstraction:** no AI runtime feature exists. Adding a mock LLM interface would imply a capability the product does not have.
+
+## Known limitations
+
+- The scheduler is a small heuristic, not SM-2/FSRS or a validated memory model. Repeated same-day correct quizzes can expand an interval; there is no daily promotion cap. Unanswered submitted questions are treated as incorrect.
+- Maximum TXT size is 1,000,000 bytes, with up to 1,000 questions and 200 decks. LocalStorage may fill before those structural limits. Only 30 recent sessions are retained; aggregate counters remain.
+- Pair-format quizzes generate distractors from other meanings in the imported deck. Teacher-authored choices are preferable when semantic ambiguity matters.
+- No cloud sync, teacher dashboard, classroom multiplayer, background review notifications or automatic app updates.
+- Web offline cold starts are unsupported. Native Windows voices can be missing or slow; a previous CI speech run timed out and passed on rerun. Audio generation is tested, not pronunciation quality by human listeners.
+- The existing component catalog and Electron runtime are retained, increasing bundle/distribution size. Mobile, screen-reader coverage and other OS versions are not comprehensively verified.
+- Historical research in [product references](docs/RESEARCH.vi.md) explains inspiration; WordNest uses its own name, workflow and interface. The legacy GitHub repository slug is retained for existing links.
+
+## Two-line resume bullet
+
+- Developed WordNest, an offline-first vocabulary application using React, TypeScript and Electron, turning teacher-provided TXT files into flashcards and quizzes with local progress and JSON backup.
+- Implemented deterministic spaced-repetition updates and idempotent quiz completion; verified the core journey with 32 automated logic/security tests, browser/Electron checks, and Windows installer testing.

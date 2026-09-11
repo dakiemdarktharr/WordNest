@@ -54,7 +54,7 @@ export function useStudyData() {
         'Chưa lưu thay đổi. ' +
           (e instanceof Error && !e.message.toLowerCase().includes('quota')
             ? e.message
-            : 'Bộ nhớ trình duyệt đã đầy hoặc không cho phép ghi. Hãy sao lưu và xóa bớt bộ từ.'),
+            : 'Bộ nhớ thiết bị đã đầy hoặc không cho phép ghi. Hãy sao lưu và xóa bớt bộ từ.'),
       );
       return false;
     }
@@ -71,7 +71,7 @@ export function useStudyData() {
       return true;
     } catch {
       setError(
-        'Không thể khôi phục: trình duyệt không đủ bộ nhớ hoặc không cho phép lưu.',
+        'Không thể khôi phục: thiết bị không đủ bộ nhớ hoặc không cho phép lưu.',
       );
       return false;
     }

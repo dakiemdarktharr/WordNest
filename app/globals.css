@@ -1649,3 +1649,20 @@ small {
 .match-status {
   display: block;
 }
+
+.environment-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0 0 22px;
+  padding: 12px 16px;
+  border: 1px solid #dce5f0;
+  border-radius: 12px;
+  background: #f2f6fb;
+  color: #52637e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.environment-note strong {
+  color: #273f69;
+}

@@ -1,0 +1,13 @@
+# WordNest demo screenshots
+
+Captured from the real production web build by `npm run test:journey` on 2026-09-11. The screenshots show the Vietnamese interface at 1280 × 960. Input: `examples/wordnest-demo.txt`, four project-authored pairs, not student data.
+
+1. `01-import.png`: UTF-8 TXT preview with four recognized pairs.
+2. `02-flashcard.png`: the flipped answer and explicit memory ratings.
+3. `03-quiz.png`: immediate feedback for the first correct answer.
+4. `04-results.png`: the scripted 3/4 score and confirmation that review dates changed.
+5. `05-progress.png`: saved history after reload, including the deliberately missed word.
+
+For screenshots 1–4, browser network access was disabled after loading the application. Screenshot 5 follows reconnection and reload; this does not demonstrate an offline web cold start. Desktop behavior is verified separately by `npm run test:journey -- --desktop` against the packaged Electron executable.
+
+Regenerate by building the web app, running the preview on port 4173, and running `npm run test:journey`. New screenshots/results are written to `outputs/journey-web/`; review them before copying them into this folder. No image generation, compositing, or synthetic UI mockups are used here. The application icon was generated earlier and is documented in `docs/ICON.md`.

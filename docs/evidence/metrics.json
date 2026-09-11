@@ -1,0 +1,70 @@
+{
+  "measuredAt": "2026-09-11T08:51:55.873Z",
+  "version": "0.2.1",
+  "environment": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "AMD Ryzen AI 5 340 w/ Radeon 840M              ",
+    "node": "v24.18.0"
+  },
+  "method": "Single-process local synthetic microbenchmark; 5 warm-ups then 25 timed runs. Input generation excluded. No learner or retention data.",
+  "sourceInputs": [
+    "lib/learning.ts",
+    "lib/storage.ts",
+    "components/quiz-session.tsx",
+    "components/learning-environment.tsx",
+    "package-lock.json"
+  ],
+  "sourceSha256": "ed99dd60497fd713d0a2c2fe5bcae92a441b0dc882575e4d02731f9e90c57d25",
+  "parser": [
+    {
+      "pairs": 10,
+      "inputBytes": 229,
+      "runs": 25,
+      "warmupRuns": 5,
+      "p50Ms": 0.005,
+      "p95Ms": 0.022
+    },
+    {
+      "pairs": 100,
+      "inputBytes": 2479,
+      "runs": 25,
+      "warmupRuns": 5,
+      "p50Ms": 0.022,
+      "p95Ms": 0.035
+    },
+    {
+      "pairs": 1000,
+      "inputBytes": 26779,
+      "runs": 25,
+      "warmupRuns": 5,
+      "p50Ms": 0.206,
+      "p95Ms": 0.569
+    }
+  ],
+  "scheduling": {
+    "reviews": 1000,
+    "runs": 25,
+    "warmupRuns": 5,
+    "p50Ms": 0.046,
+    "p95Ms": 0.056
+  },
+  "assets": [
+    {
+      "name": "index-LmVZqjQY.js",
+      "bytes": 445487,
+      "gzipBytes": 143128
+    },
+    {
+      "name": "index-vJfey_hJ.css",
+      "bytes": 191154,
+      "gzipBytes": 31393
+    }
+  ],
+  "installer": {
+    "path": "release\\WordNest-Setup-0.2.1-x64.exe",
+    "bytes": 111636777,
+    "sha256": "74c892e9738acdb976935213ce95a2b0d8026edcd995f581e8f4957f67be9bf7"
+  }
+}

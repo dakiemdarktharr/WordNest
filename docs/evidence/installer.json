@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "installer": "release/WordNest-Setup-0.2.1-x64.exe",
+  "shortcuts": "Desktop and Start Menu verified",
+  "installerExitCode": 0,
+  "uninstall": "removed test executable",
+  "installedApp": "smoke passed",
+  "testedAt": "2026-09-11T08:52:38.5906091Z"
+}

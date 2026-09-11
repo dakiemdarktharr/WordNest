@@ -21,10 +21,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Speak } from '@/components/controls';
 import {
-  emptyReview,
+  completeSession,
   grade,
   gradeWritten,
-  reviewKey,
   solution,
   type Deck,
   type Session,
@@ -66,31 +65,9 @@ export function QuizSession({
     [update, session.id],
   );
   const finish = useCallback(() => {
-    const success = update((d) => {
-      const current = d.sessions.find((s) => s.id === session.id);
-      if (!current || current.finishedAt) return d;
-      const reviews = { ...d.reviews };
-      for (const question of current.questions) {
-        const key = reviewKey(deck.id, question.id);
-        const r = reviews[key] ?? emptyReview();
-        const correct = current.answers[question.id]?.correct ?? false;
-        reviews[key] = {
-          ...r,
-          correct: r.correct + (correct ? 1 : 0),
-          wrong: r.wrong + (correct ? 0 : 1),
-          due: correct ? r.due : 0,
-        };
-      }
-      return {
-        ...d,
-        reviews,
-        sessions: d.sessions.map((s) =>
-          s.id === session.id ? { ...s, finishedAt: Date.now() } : s,
-        ),
-      };
-    });
+    const success = update((d) => completeSession(d, session.id, Date.now()));
     if (success) setConfirm(false);
-  }, [update, session.id, deck.id]);
+  }, [update, session.id]);
   useEffect(() => {
     if (session.finishedAt || !session.deadline) return;
     const tick = () => {
@@ -226,6 +203,10 @@ export function QuizSession({
             </button>
           </div>
         </div>
+        <output className="small center muted">
+          Lịch ôn đã cập nhật: câu đúng được giãn lịch, câu sai hoặc bỏ trống ôn
+          lại sau 1 phút.
+        </output>
         <section className="panel">
           <h2>Xem lại để nhớ lâu hơn</h2>
           {session.questions.map((q, i) => {
