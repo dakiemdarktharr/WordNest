@@ -81,7 +81,7 @@ Import this repository into Vercel with **Vite**, root directory **`.`**, Node.j
 
 See [the Vietnamese Vercel guide](docs/VERCEL.vi.md) for exact steps and verification. Learning data remains in each browser; it does not synchronize with the desktop app or other domains. Transfer it with JSON backups. The web app needs a connection to open/reload; desktop installers remain available separately.
 
-The current Vercel project was deployed by CLI. GitHub linking was not authorized successfully, so Git pushes do **not** currently update the website automatically. Connect the repository in Vercel to enable that, or redeploy with the CLI command in the guide.
+The Vercel project is connected to **`dakiemdarktharr/WordNest`** on GitHub (the repository was renamed from `quizziz_clone`). Push updates to **`codex/wordnest`** for production deployments. The guide also includes a CLI deployment command.
 
 ## Development setup and run
 

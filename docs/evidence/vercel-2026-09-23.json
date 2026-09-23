@@ -49,7 +49,12 @@
       "curious": 0.0006944444444444445
     }
   },
-  "gitIntegration": "Connection was attempted by Vercel CLI but failed; Git pushes do not currently auto-deploy. Production was deployed by CLI.",
+  "gitIntegration": {
+    "connected": true,
+    "repository": "https://github.com/dakiemdarktharr/WordNest",
+    "productionBranch": "codex/wordnest",
+    "note": "The initial connection failed because the local remote used the old repository name quizziz_clone. After verifying GitHub repository ID 1362873418, origin was updated and Vercel CLI git connect returned Connected."
+  },
   "limitations": [
     "Progress is browser-local and separate from desktop/other domains",
     "Web cold-start/reload requires a network connection",

@@ -7,12 +7,12 @@ WordNest có thể dùng dưới dạng website HTTPS và app desktop Windows/ma
 - Link chia sẻ cho học viên: **https://wordnest-eta.vercel.app**.
 - Project: **wordnest**, workspace **ACNE (`acne-a6cd`)**.
 - Ngày kiểm tra: **23/09/2026**. Link công khai trả HTTP 200, file không tồn tại trả 404; 14 nhóm kiểm thử trình duyệt trên website thật đều qua. [Bằng chứng](evidence/vercel-2026-09-23.json).
-- Hiện triển khai bằng CLI. Vercel chưa kết nối thành công repo GitHub, nên push Git chưa tự cập nhật website. Trong project Vercel, mở **Settings → Git**, kết nối `dakiemdarktharr/quizziz_clone`, cấp quyền repo khi được yêu cầu, rồi đặt Production Branch là `codex/wordnest`. Chưa cần làm bước này để học viên dùng link trên.
+- Đã kết nối Vercel với repo GitHub **`dakiemdarktharr/WordNest`**, nhánh production **`codex/wordnest`**. Repo trước đây tên `quizziz_clone`; dùng tên mới khi cấu hình tích hợp. Push vào nhánh production sẽ triển khai cập nhật lên cùng domain. Có thể kiểm tra hoặc đổi nhánh tại **Settings → Git** của project Vercel.
 
 ## Tạo website khác từ GitHub
 
 1. Đăng nhập [Vercel](https://vercel.com/new), chọn **Add New → Project**.
-2. Import repository `dakiemdarktharr/quizziz_clone`.
+2. Import repository `dakiemdarktharr/WordNest`.
 3. Chọn nhánh **codex/wordnest** làm Production Branch. Giữ Root Directory ở thư mục gốc của repo.
 4. Framework Preset: **Vite**; Node.js: **24.x**. File `vercel.json` đã đặt Build Command là `npm run build`, Output Directory là `dist`.
 5. Install Command trong cấu hình là `ELECTRON_SKIP_BINARY_DOWNLOAD=1 npm ci`. Lệnh này chạy trên máy build Linux của Vercel, bỏ tải Electron vì website không cần bộ runtime desktop. Cách cài/build desktop thông thường không thay đổi.
