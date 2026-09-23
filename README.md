@@ -8,7 +8,7 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 ## Install the desktop app
 
-**For learners: [download the latest WordNest desktop release](https://github.com/dakiemdarktharr/WordNest/releases/latest)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
+**For learners: [download WordNest 0.3.3](https://github.com/dakiemdarktharr/WordNest/releases/tag/v0.3.3)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
 [Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/WordNest/releases/latest)
 
@@ -21,6 +21,10 @@ WordNest is an original product for an English teacher who distributes vocabular
 - **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.3 or later.
 
 Validation: 41 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 17 browser journey groups cover session size, wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.3 release notes](docs/RELEASE-0.3.3.md).
+
+Native validation passed **14 Windows installed-app journey groups** and **19 groups per Mac package** (DMG and ZIP, ARM64 and Intel), plus installer and signature checks. The public Vercel deployment passed all **17 browser groups**. See the [current acceptance record](docs/ACCEPTANCE.md), [native reports](docs/evidence/native-0.3.3.json) and [public-web evidence](docs/evidence/vercel-0.3.3.json) for commands, provenance and limitations.
+
+Release 0.3.3 is published. [Asset sizes and SHA-256](docs/evidence/release-0.3.3.json) identify the exact downloads; all four Mac artifact hashes match their native test reports. The publish job succeeded on its second attempt after a GitHub HTTP 500; native checks had already passed.
 
 ## Included features
 

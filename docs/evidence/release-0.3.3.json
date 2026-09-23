@@ -1,0 +1,74 @@
+{
+  "verifiedAt": "2026-09-23T14:18:22.3220941Z",
+  "sourceCommit": "f4830a3be79bb3f686f65207df9520da69402526",
+  "releaseUrl": "https://github.com/dakiemdarktharr/WordNest/releases/tag/v0.3.3",
+  "publishedAt": "2026-09-23T14:16:38Z",
+  "releaseWorkflow": "https://github.com/dakiemdarktharr/WordNest/actions/runs/35871641210",
+  "publishAttempt": 2,
+  "macArtifactHashesMatchNativeReports": true,
+  "assets": [
+    {
+      "name": "SHA256-macOS-arm64.txt",
+      "size": 182,
+      "state": "uploaded",
+      "digest": "sha256:728177fef022358f5c5e2ab41f117937464b671bbfdd3980f9dbe5c01fbcf557",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/SHA256-macOS-arm64.txt"
+    },
+    {
+      "name": "SHA256-macOS-x64.txt",
+      "size": 178,
+      "state": "uploaded",
+      "digest": "sha256:ca82fbbb436b285222c56ac6db0434b33289fd7fc9a4f1258f8febdb6caeb385",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/SHA256-macOS-x64.txt"
+    },
+    {
+      "name": "SHA256-Windows.txt",
+      "size": 96,
+      "state": "uploaded",
+      "digest": "sha256:59b6492900d677c2f9517c13fef8654d69fe7df8171bf9175d9bca0b8788ccbc",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/SHA256-Windows.txt"
+    },
+    {
+      "name": "WordNest-0.3.3-arm64.dmg",
+      "size": 127991442,
+      "state": "uploaded",
+      "digest": "sha256:5eb4066d79c6157bd44d672a52ad50444f748351e74ecd414875e837849f0666",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/WordNest-0.3.3-arm64.dmg"
+    },
+    {
+      "name": "WordNest-0.3.3-arm64.zip",
+      "size": 127722666,
+      "state": "uploaded",
+      "digest": "sha256:79d76ff6084c5446ecc729572ec7783b4c2a4309105e297bed54de84f940c02a",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/WordNest-0.3.3-arm64.zip"
+    },
+    {
+      "name": "WordNest-0.3.3-x64.dmg",
+      "size": 134021365,
+      "state": "uploaded",
+      "digest": "sha256:67d0378c6508ff6f8e3f04022e65734a5d0988a15218a35ea2c743e7aea29dd5",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/WordNest-0.3.3-x64.dmg"
+    },
+    {
+      "name": "WordNest-0.3.3-x64.zip",
+      "size": 133786986,
+      "state": "uploaded",
+      "digest": "sha256:931194ff5f10a1c627567ea43a9297908a23e6faea8f359b3d28c435e76c3630",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/WordNest-0.3.3-x64.zip"
+    },
+    {
+      "name": "wordnest-demo.txt",
+      "size": 98,
+      "state": "uploaded",
+      "digest": "sha256:5509f7c3d896cbc51cc4a5fa088df539c04e4cc233a9b0a19687e312056ded40",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/wordnest-demo.txt"
+    },
+    {
+      "name": "WordNest-Setup-0.3.3-x64.exe",
+      "size": 111640182,
+      "state": "uploaded",
+      "digest": "sha256:db48b9ecf397629dc02b43bc81ab5d57465c9a751c0cc224c6512c798400d868",
+      "browser_download_url": "https://github.com/dakiemdarktharr/WordNest/releases/download/v0.3.3/WordNest-Setup-0.3.3-x64.exe"
+    }
+  ]
+}

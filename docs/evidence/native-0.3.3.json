@@ -1,0 +1,238 @@
+{
+  "version": "0.3.3",
+  "sourceCommit": "f4830a3be79bb3f686f65207df9520da69402526",
+  "releaseWorkflow": "https://github.com/dakiemdarktharr/WordNest/actions/runs/35871641210",
+  "windowsEvidenceWorkflow": "https://github.com/dakiemdarktharr/WordNest/actions/runs/35871634111",
+  "logicTests": 41,
+  "desktopSecurityTests": 6,
+  "windowsInstaller": {
+    "shortcuts": "Desktop and Start Menu verified",
+    "testedAt": "2026-09-23T14:11:12.5796395Z",
+    "installedApp": "smoke passed",
+    "installer": "D:\\a\\WordNest\\WordNest\\release\\WordNest-Setup-0.3.3-x64.exe",
+    "passed": true,
+    "uninstall": "removed test executable",
+    "installerExitCode": 0
+  },
+  "windowsJourney": {
+    "verifiedAt": "2026-09-23T14:11:10.745Z",
+    "platform": "Electron win32 x64",
+    "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+    "checks": [
+      "explicit offline behavior",
+      "invalid UTF-8 is rejected visibly",
+      "malformed TXT cannot be committed",
+      "imports four vocabulary pairs",
+      "flashcard schedules first review in one day",
+      "quiz grades 3/4 and updates the same review schedule",
+      "reload preserves completed quiz and review dates exactly",
+      "light/dark theme applies to app and dialogs and survives reload",
+      "create vocabulary manually validates rows and persists an additional deck",
+      "practice advances after mistakes, repeats wrong questions later and requires 100% completion",
+      "writing repeats mistakes after other questions and cannot finish early, including after reload",
+      "multiple-choice retry requires the exact answer set; failed save cannot unlock the next question",
+      "visible word-count choice rejects invalid counts and practices exactly the chosen subset until all correct",
+      "new features survive desktop quit and cold relaunch"
+    ],
+    "errors": [],
+    "readyMs": 512,
+    "elapsedMs": 176897,
+    "score": {
+      "correct": 3,
+      "total": 4
+    },
+    "intervalsDays": {
+      "resilient": 2,
+      "curious": 0.0006944444444444445
+    }
+  },
+  "macArm64": {
+    "verifiedAt": "2026-09-23T14:11:20.499Z",
+    "version": "0.3.3",
+    "arch": "arm64",
+    "checks": [
+      {
+        "name": "WordNest-0.3.3-arm64.dmg",
+        "sha256": "5eb4066d79c6157bd44d672a52ad50444f748351e74ecd414875e837849f0666",
+        "signature": "valid ad-hoc with hardened runtime",
+        "nativeArch": "arm64",
+        "journey": {
+          "verifiedAt": "2026-09-23T14:10:59.081Z",
+          "platform": "Electron darwin arm64",
+          "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+          "checks": [
+            "explicit offline behavior",
+            "invalid UTF-8 is rejected visibly",
+            "malformed TXT cannot be committed",
+            "imports four vocabulary pairs",
+            "flashcard schedules first review in one day",
+            "quiz grades 3/4 and updates the same review schedule",
+            "reload preserves completed quiz and review dates exactly",
+            "Mac native menu and renderer isolation",
+            "Mac native backup preserves the study library",
+            "Mac native speech produces valid PCM audio and rejects invalid input",
+            "Mac closing a window keeps the app available and Dock activation restores data",
+            "Mac quit and cold relaunch preserve quiz and review progress",
+            "light/dark theme applies to app and dialogs and survives reload",
+            "create vocabulary manually validates rows and persists an additional deck",
+            "practice advances after mistakes, repeats wrong questions later and requires 100% completion",
+            "writing repeats mistakes after other questions and cannot finish early, including after reload",
+            "multiple-choice retry requires the exact answer set; failed save cannot unlock the next question",
+            "visible word-count choice rejects invalid counts and practices exactly the chosen subset until all correct",
+            "new features survive desktop quit and cold relaunch"
+          ],
+          "errors": [],
+          "readyMs": 1737,
+          "elapsedMs": 16889,
+          "score": {
+            "correct": 3,
+            "total": 4
+          },
+          "intervalsDays": {
+            "resilient": 2,
+            "curious": 0.0006944444444444445
+          }
+        }
+      },
+      {
+        "name": "WordNest-0.3.3-arm64.zip",
+        "sha256": "79d76ff6084c5446ecc729572ec7783b4c2a4309105e297bed54de84f940c02a",
+        "signature": "valid ad-hoc with hardened runtime",
+        "nativeArch": "arm64",
+        "journey": {
+          "verifiedAt": "2026-09-23T14:11:17.585Z",
+          "platform": "Electron darwin arm64",
+          "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+          "checks": [
+            "explicit offline behavior",
+            "invalid UTF-8 is rejected visibly",
+            "malformed TXT cannot be committed",
+            "imports four vocabulary pairs",
+            "flashcard schedules first review in one day",
+            "quiz grades 3/4 and updates the same review schedule",
+            "reload preserves completed quiz and review dates exactly",
+            "Mac native menu and renderer isolation",
+            "Mac native backup preserves the study library",
+            "Mac native speech produces valid PCM audio and rejects invalid input",
+            "Mac closing a window keeps the app available and Dock activation restores data",
+            "Mac quit and cold relaunch preserve quiz and review progress",
+            "light/dark theme applies to app and dialogs and survives reload",
+            "create vocabulary manually validates rows and persists an additional deck",
+            "practice advances after mistakes, repeats wrong questions later and requires 100% completion",
+            "writing repeats mistakes after other questions and cannot finish early, including after reload",
+            "multiple-choice retry requires the exact answer set; failed save cannot unlock the next question",
+            "visible word-count choice rejects invalid counts and practices exactly the chosen subset until all correct",
+            "new features survive desktop quit and cold relaunch"
+          ],
+          "errors": [],
+          "readyMs": 1198,
+          "elapsedMs": 12628,
+          "score": {
+            "correct": 3,
+            "total": 4
+          },
+          "intervalsDays": {
+            "resilient": 2,
+            "curious": 0.0006944444444444445
+          }
+        }
+      }
+    ],
+    "limitation": "Ad-hoc signature is valid, but Apple Developer ID/notarization and user Gatekeeper approval are not verified."
+  },
+  "macIntel": {
+    "verifiedAt": "2026-09-23T14:12:56.381Z",
+    "version": "0.3.3",
+    "arch": "x64",
+    "checks": [
+      {
+        "name": "WordNest-0.3.3-x64.dmg",
+        "sha256": "67d0378c6508ff6f8e3f04022e65734a5d0988a15218a35ea2c743e7aea29dd5",
+        "signature": "valid ad-hoc with hardened runtime",
+        "nativeArch": "x64",
+        "journey": {
+          "verifiedAt": "2026-09-23T14:12:19.367Z",
+          "platform": "Electron darwin x64",
+          "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+          "checks": [
+            "explicit offline behavior",
+            "invalid UTF-8 is rejected visibly",
+            "malformed TXT cannot be committed",
+            "imports four vocabulary pairs",
+            "flashcard schedules first review in one day",
+            "quiz grades 3/4 and updates the same review schedule",
+            "reload preserves completed quiz and review dates exactly",
+            "Mac native menu and renderer isolation",
+            "Mac native backup preserves the study library",
+            "Mac native speech produces valid PCM audio and rejects invalid input",
+            "Mac closing a window keeps the app available and Dock activation restores data",
+            "Mac quit and cold relaunch preserve quiz and review progress",
+            "light/dark theme applies to app and dialogs and survives reload",
+            "create vocabulary manually validates rows and persists an additional deck",
+            "practice advances after mistakes, repeats wrong questions later and requires 100% completion",
+            "writing repeats mistakes after other questions and cannot finish early, including after reload",
+            "multiple-choice retry requires the exact answer set; failed save cannot unlock the next question",
+            "visible word-count choice rejects invalid counts and practices exactly the chosen subset until all correct",
+            "new features survive desktop quit and cold relaunch"
+          ],
+          "errors": [],
+          "readyMs": 3099,
+          "elapsedMs": 24372,
+          "score": {
+            "correct": 3,
+            "total": 4
+          },
+          "intervalsDays": {
+            "resilient": 2,
+            "curious": 0.0006944444444444445
+          }
+        }
+      },
+      {
+        "name": "WordNest-0.3.3-x64.zip",
+        "sha256": "931194ff5f10a1c627567ea43a9297908a23e6faea8f359b3d28c435e76c3630",
+        "signature": "valid ad-hoc with hardened runtime",
+        "nativeArch": "x64",
+        "journey": {
+          "verifiedAt": "2026-09-23T14:12:52.348Z",
+          "platform": "Electron darwin x64",
+          "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+          "checks": [
+            "explicit offline behavior",
+            "invalid UTF-8 is rejected visibly",
+            "malformed TXT cannot be committed",
+            "imports four vocabulary pairs",
+            "flashcard schedules first review in one day",
+            "quiz grades 3/4 and updates the same review schedule",
+            "reload preserves completed quiz and review dates exactly",
+            "Mac native menu and renderer isolation",
+            "Mac native backup preserves the study library",
+            "Mac native speech produces valid PCM audio and rejects invalid input",
+            "Mac closing a window keeps the app available and Dock activation restores data",
+            "Mac quit and cold relaunch preserve quiz and review progress",
+            "light/dark theme applies to app and dialogs and survives reload",
+            "create vocabulary manually validates rows and persists an additional deck",
+            "practice advances after mistakes, repeats wrong questions later and requires 100% completion",
+            "writing repeats mistakes after other questions and cannot finish early, including after reload",
+            "multiple-choice retry requires the exact answer set; failed save cannot unlock the next question",
+            "visible word-count choice rejects invalid counts and practices exactly the chosen subset until all correct",
+            "new features survive desktop quit and cold relaunch"
+          ],
+          "errors": [],
+          "readyMs": 2946,
+          "elapsedMs": 24334,
+          "score": {
+            "correct": 3,
+            "total": 4
+          },
+          "intervalsDays": {
+            "resilient": 2,
+            "curious": 0.0006944444444444445
+          }
+        }
+      }
+    ],
+    "limitation": "Ad-hoc signature is valid, but Apple Developer ID/notarization and user Gatekeeper approval are not verified."
+  },
+  "limitation": "Native CI checks do not cover every OS/device or simulate Gatekeeper approval for a quarantined download. Windows is unsigned; Mac is ad-hoc signed without Developer ID/notarization."
+}
