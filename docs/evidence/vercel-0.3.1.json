@@ -1,0 +1,34 @@
+{
+  "verifiedAt": "2026-09-23T13:45:48.298Z",
+  "platform": "153.0.4234.48",
+  "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+  "checks": [
+    "explicit offline behavior",
+    "invalid UTF-8 is rejected visibly",
+    "malformed TXT cannot be committed",
+    "imports four vocabulary pairs",
+    "flashcard schedules first review in one day",
+    "quiz grades 3/4 and updates the same review schedule",
+    "reload preserves completed quiz and review dates exactly",
+    "light/dark theme applies to app and dialogs and survives reload",
+    "create vocabulary manually validates rows and persists an additional deck",
+    "practice advances after mistakes, repeats wrong questions later and requires 100% completion",
+    "writing repeats mistakes after other questions and cannot finish early, including after reload",
+    "multiple-choice retry requires the exact answer set; failed save cannot unlock the next question",
+    "corrupt storage shows recovery guidance and preserves original bytes",
+    "failed writes do not report a successful import",
+    "theme write failure is visible without blocking study",
+    "failed manual deck save keeps form contents and does not add a deck"
+  ],
+  "errors": [],
+  "readyMs": 3040,
+  "elapsedMs": 17005,
+  "score": {
+    "correct": 3,
+    "total": 4
+  },
+  "intervalsDays": {
+    "resilient": 2,
+    "curious": 0.0006944444444444445
+  }
+}

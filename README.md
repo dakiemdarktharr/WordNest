@@ -10,16 +10,16 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 **For learners: [download the latest WordNest desktop release](https://github.com/dakiemdarktharr/WordNest/releases/latest)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
-[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0)
+[Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/WordNest/releases/latest)
 
-## New in 0.3.1
+## New in 0.3.2
 
 - **Practice finishes only after every selected question has been answered correctly.** A wrong answer still allows moving to the next question, but is queued again after the remaining questions. The last wrong question repeats until correct. This applies to multiple-choice practice and writing.
 - **Simpler study UI:** one click grades a single-answer question; multi-answer questions and writing retain an explicit check button. Three modes (practice, writing, test) replace overlapping practice choices. Count, shuffle, timer and writing direction are under **Tùy chọn lượt học**.
 - **Honest results:** completion shows 100% of questions cleared, separately from the first-attempt score used by spaced repetition. Saving failed progress never unlocks completion. Pending queues survive restart; unfinished legacy practice is upgraded without rewriting completed history.
-- **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.1 or later.
+- **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.2 or later.
 
-Validation: 40 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 16 browser journey groups cover wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.1 release notes](docs/RELEASE-0.3.1.md).
+Validation: 40 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 16 browser journey groups cover wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.2 release notes](docs/RELEASE-0.3.2.md).
 
 ## Included features
 
@@ -46,7 +46,7 @@ These are actual screenshots of the production web build, captured by the automa
 
 [Full quiz result screenshot](docs/demo/04-results.png) · [Demo details and provenance](docs/demo/README.md)
 
-### Practice workflow (0.3.1)
+### Practice workflow (0.3.2)
 
 Actual production web captures from the scripted three-word fixture; desktop behavior is checked separately.
 
@@ -215,13 +215,13 @@ All future user-facing changes must keep shared renderer behavior working on Win
 
 ## Release and installation
 
-The source version in this branch is **0.3.0**. Build the verified local Windows installer with:
+The source version in this branch is **0.3.2**. Build the Windows installer with:
 
 ```powershell
 npm ci
 npm run desktop:dist
-& '.\release\WordNest-Setup-0.3.0-x64.exe'
-Get-FileHash '.\release\WordNest-Setup-0.3.0-x64.exe' -Algorithm SHA256
+& '.\release\WordNest-Setup-0.3.2-x64.exe'
+Get-FileHash '.\release\WordNest-Setup-0.3.2-x64.exe' -Algorithm SHA256
 ```
 
 Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.
@@ -236,7 +236,7 @@ npm run desktop:dist:mac -- --arm64
 
 This produces `.dmg` and `.zip` packages for the selected architecture. A macOS machine is required. `npm run test:mac` verifies signatures and runs the study journey from both packages on that architecture. Release tests download the artifacts onto a new Mac runner before verification.
 
-[GitHub Release v0.3.0](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
+[GitHub Releases](https://github.com/dakiemdarktharr/WordNest/releases/latest) distributes the tested Windows installer and macOS Intel/Apple Silicon packages, plus the checksum and demo TXT. Choose the platform package; the automatically generated source archives are for development. See the [Vietnamese installation guide](docs/INSTALL.vi.md) for step-by-step instructions.
 
 Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with hardened runtime and Electron JIT/library entitlements. They are not Apple Developer ID signed or notarized. macOS may still require Privacy & Security → Open Anyway for an unverified developer; this must not be confused with a broken code signature. Do not disable Gatekeeper to work around a damaged-app error. Updates are manual. No Linux or Windows ARM64 package has been verified. Release checksums identify the published artifacts.
 
@@ -257,9 +257,9 @@ Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with
 - No cloud sync, teacher dashboard, classroom multiplayer, background review notifications or automatic app updates.
 - Web offline cold starts are unsupported. Native Windows voices can be missing or slow; a previous CI speech run timed out and passed on rerun. Audio generation is tested, not pronunciation quality by human listeners.
 - The existing component catalog and Electron runtime are retained, increasing bundle/distribution size. Mobile, screen-reader coverage and other OS versions are not comprehensively verified.
-- Historical research in [product references](docs/RESEARCH.vi.md) explains inspiration; WordNest uses its own name, workflow and interface. The legacy GitHub repository slug is retained for existing links.
+- Historical research in [product references](docs/RESEARCH.vi.md) explains inspiration; WordNest uses its own name, workflow and interface. Older GitHub links redirect to the renamed WordNest repository.
 
 ## Two-line resume bullet
 
 - Developed WordNest, an offline-first vocabulary application using React, TypeScript and Electron, turning teacher-provided TXT files into flashcards and quizzes with local progress and JSON backup.
-- Implemented deterministic spaced-repetition updates and idempotent quiz completion; verified the core journey with 43 automated logic/security tests, browser/Electron checks, and Windows/macOS package testing.
+- Implemented deterministic spaced repetition and a persistent retry queue that requires every practice question correct before completion; covered the core with 46 logic/security tests and browser/Electron workflow checks.

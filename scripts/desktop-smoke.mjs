@@ -80,9 +80,13 @@ try {
     .filter({ hasText: /C$/ })
     .getByRole('button')
     .click();
-  await page
-    .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
-    .click();
+  // Single-answer practice is graded on selection; no extra submit click.
+  await expect(
+    page.getByRole('button', { name: 'Kiểm tra đáp án', exact: true }),
+  ).not.toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Hoàn thành lượt học', exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByText('Chính xác, làm tốt lắm!', { exact: false }),
   ).toBeVisible();
