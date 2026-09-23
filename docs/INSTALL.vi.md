@@ -82,6 +82,7 @@ Release có `SHA256-Windows.txt`, `SHA256-macOS-arm64.txt` và `SHA256-macOS-x64
 1. **Thêm bộ từ trực tiếp:** ở thư viện nhấn **Tạo bộ từ**, nhập tên, từ và nghĩa; nhấn **Thêm từ** để thêm dòng, rồi **Lưu bộ từ**. Bộ này dùng được như bộ nhập từ TXT.
 2. **Sáng/tối:** bấm nút mặt trăng hoặc mặt trời ở góc trên bên phải. App nhớ lựa chọn sau khi đóng và mở lại.
 3. **Lặp câu sai:** mở bộ từ, chọn **Luyện tập** hoặc **Luyện gõ** rồi bắt đầu. Chọn một đáp án là app chấm ngay; câu nhiều đáp án hoặc luyện gõ có nút **Kiểm tra đáp án**. Đọc phản hồi rồi **Câu tiếp theo**. Câu sai quay lại sau các câu còn lại; khi chỉ còn một câu sai, bấm **Thử lại câu này**. Chỉ được hoàn thành khi đã làm đúng 100% câu trong lượt đã chọn. Nút **Tạm nghỉ** cho phép học tiếp sau.
-4. **Tùy chọn lượt học:** mở mục này để đổi số câu, trộn thứ tự, hướng luyện gõ hoặc thời gian kiểm tra. Chế độ **Kiểm tra** vẫn cho nộp bài tự do để đo điểm, không bắt luyện lại.
+4. **Chọn số từ:** trước khi bắt đầu, nhập **Số từ muốn luyện** ngay trên màn hình. Chọn số nguyên từ 1 đến số từ phù hợp trong bộ. Ví dụ chọn 10 thì chỉ luyện 10 từ; câu sai trong 10 từ đó vẫn lặp lại đến khi đúng hết. Ô trống hoặc số không hợp lệ sẽ khóa nút bắt đầu.
+5. **Tùy chọn lượt học:** mở mục này để đổi trộn thứ tự, hướng luyện gõ hoặc thời gian kiểm tra. Chế độ **Kiểm tra** vẫn cho nộp bài tự do để đo điểm, không bắt luyện lại.
 
 Màn hình kết quả phân biệt **đã luyện đúng 100%** với **điểm lần đầu**; câu từng sai vẫn được hẹn ôn sớm. Luyện tập và luyện gõ không giới hạn thời gian. Hãy dùng app 0.3.3 trở lên khi khôi phục bản sao lưu có lượt luyện mới. Tùy chọn sáng/tối không nằm trong bản sao lưu thư viện.

@@ -252,3 +252,19 @@ await test('wrong final answer cannot finish even with a forged correct flag; ex
     1000,
   );
 });
+
+await test('chosen practice count bounds the retry queue and SRS changes to that subset', () => {
+  let data = fixture('practice');
+  data.sessions = [makeSession(data.decks[0], 'practice', 2, false, 0, false)];
+  const id = data.sessions[0].id;
+  assert.equal(data.sessions[0].questions.length, 2);
+  data = advanceMastery(select(data, false), id, 1000);
+  assert.deepEqual(data.sessions[0].mastery?.queue, ['q2', 'q1']);
+  data = advanceMastery(select(data, true), id, 1000);
+  assert.equal(completeSession(data, id, 1000), data);
+  data = advanceMastery(select(data, true), id, 1000);
+  assert.equal(data.sessions[0].finishedAt, 1000);
+  assert.equal(data.sessions[0].mastery?.attempts, 3);
+  assert.deepEqual(sessionScore(data.sessions[0]), { correct: 1, total: 2 });
+  assert.equal(data.reviews[data.decks[0].id + ':q3'], undefined);
+});

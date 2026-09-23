@@ -3,7 +3,8 @@
 Đây là bản thay cho hai lần thử 0.3.1/0.3.2 chưa công bố bộ cài. Kiểm thử Windows đã cập nhật theo thao tác chọn đáp án một lần và bỏ thao tác chụp ảnh phụ bị treo ở cửa sổ chạy ẩn. Không bỏ kiểm tra chức năng; ảnh minh họa được lấy từ cùng giao diện trên web, còn bản native kiểm tra DOM, dữ liệu, lưu/mở lại, phát âm và bộ cài.
 
 - **Luyện tập và Luyện gõ:** trả lời sai vẫn được sang câu khác; câu sai quay lại cuối lượt. Chỉ hoàn thành sau khi đã trả lời đúng **100% câu trong lượt học đã chọn**. Nếu chỉ còn một câu sai, bấm **Thử lại câu này**.
-- **Ít thao tác hơn:** câu có một đáp án được chấm ngay khi chọn. Câu có nhiều đáp án và luyện gõ vẫn có nút **Kiểm tra đáp án**. Ba lựa chọn chính là Luyện tập, Luyện gõ, Kiểm tra; số câu, trộn câu và hướng gõ nằm trong **Tùy chọn lượt học**.
+- **Chọn số từ trước khi học:** ô **Số từ muốn luyện** hiện ngay phía trên nút bắt đầu. Chọn số nguyên từ 1 đến số từ có thể học; lượt luyện chỉ lấy đúng số đó. Giá trị trống, lẻ, âm hoặc vượt số từ có sẵn không thể bắt đầu.
+- **Ít thao tác hơn:** câu có một đáp án được chấm ngay khi chọn. Câu có nhiều đáp án và luyện gõ vẫn có nút **Kiểm tra đáp án**. Ba lựa chọn chính là Luyện tập, Luyện gõ, Kiểm tra; trộn câu, thời gian kiểm tra và hướng gõ nằm trong **Tùy chọn lượt học**.
 - **Tiến độ rõ ràng:** kết quả phân biệt hoàn thành 100% với điểm lần đầu. Lịch ôn dựa trên lần trả lời đầu, không tăng điểm vì vừa xem đáp án.
 - **Lưu và tiếp tục:** hàng đợi và phản hồi được lưu; lỗi lưu không cho tiến độ chuyển sang trạng thái chưa lưu. Bài cũ đang dở tiếp tục từ câu sai/chưa trả lời; lịch sử hoàn thành giữ nguyên.
 

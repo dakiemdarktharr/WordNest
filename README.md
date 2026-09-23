@@ -15,11 +15,12 @@ WordNest is an original product for an English teacher who distributes vocabular
 ## New in 0.3.3
 
 - **Practice finishes only after every selected question has been answered correctly.** A wrong answer still allows moving to the next question, but is queued again after the remaining questions. The last wrong question repeats until correct. This applies to multiple-choice practice and writing.
-- **Simpler study UI:** one click grades a single-answer question; multi-answer questions and writing retain an explicit check button. Three modes (practice, writing, test) replace overlapping practice choices. Count, shuffle, timer and writing direction are under **Tùy chọn lượt học**.
+- **Choose the session size:** **Số từ muốn luyện** is visible before starting. Enter a whole number from 1 to the available count; blank, fractional or out-of-range values cannot start a session. Only that subset enters the retry queue and receives review updates. Writing counts only eligible single-answer questions.
+- **Simpler study UI:** one click grades a single-answer question; multi-answer questions and writing retain an explicit check button. Three modes (practice, writing, test) replace overlapping practice choices. Shuffle, timer and writing direction are under **Tùy chọn lượt học**.
 - **Honest results:** completion shows 100% of questions cleared, separately from the first-attempt score used by spaced repetition. Saving failed progress never unlocks completion. Pending queues survive restart; unfinished legacy practice is upgraded without rewriting completed history.
 - **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.3 or later.
 
-Validation: 40 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 16 browser journey groups cover wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.3 release notes](docs/RELEASE-0.3.3.md).
+Validation: 41 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 17 browser journey groups cover session size, wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.3 release notes](docs/RELEASE-0.3.3.md).
 
 ## Included features
 
@@ -53,6 +54,8 @@ Actual production web captures from the scripted three-word fixture; desktop beh
 | Create a deck in dark mode | Retry until correct |
 | --- | --- |
 | ![Create a vocabulary deck](docs/demo/06-create-dark.png) | ![Practice feedback and completion gate](docs/demo/07-practice-dark.png) |
+
+![Choose how many words to practice before starting](docs/demo/08-study-count.png)
 
 ## Architecture
 
@@ -263,4 +266,4 @@ Windows packages remain unsigned. macOS bundles use an **ad-hoc signature** with
 ## Two-line resume bullet
 
 - Developed WordNest, an offline-first vocabulary application using React, TypeScript and Electron, turning teacher-provided TXT files into flashcards and quizzes with local progress and JSON backup.
-- Implemented deterministic spaced repetition and a persistent retry queue that requires every practice question correct before completion; covered the core with 46 logic/security tests and browser/Electron workflow checks.
+- Implemented deterministic spaced repetition and a persistent retry queue that requires every practice question correct before completion; covered the core with 47 logic/security tests and browser/Electron workflow checks.

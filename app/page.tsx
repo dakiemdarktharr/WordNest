@@ -68,6 +68,12 @@ const modeNames = {
   test: 'Kiểm tra',
   write: 'Luyện gõ',
 };
+const availableStudyCount = (deck: Deck, mode: Session['mode']) =>
+  mode === 'write'
+    ? deck.questions.filter(
+        (q) => q.choices.filter((c) => c.correct).length === 1,
+      ).length
+    : deck.questions.length;
 export default function Home() {
   const { data, ready, storageError, update, restore } = useStudyData();
   const [tab, setTab] = useState('library');
@@ -101,6 +107,9 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
   const deck = data.decks.find((d) => d.id === selectedDeck);
+  const availableCount = deck ? availableStudyCount(deck, mode) : 0;
+  const validCount =
+    Number.isInteger(count) && count >= 1 && count <= availableCount;
   const session = data.sessions.find((s) => s.id === sessionId);
   useEffect(() => {
     type Context = {
@@ -180,7 +189,7 @@ export default function Home() {
     setSelectedDeck(d.id);
     setView('deck');
     setTermSearch('');
-    setCount(Math.min(20, d.questions.length));
+    setCount(Math.min(20, availableStudyCount(d, mode)));
     setNotice('');
   }
   function addDeck(next: Deck) {
@@ -208,11 +217,14 @@ export default function Home() {
   }
   function start(onlyIds?: string[]) {
     if (!deck) return;
+    if (!onlyIds && !validCount) {
+      setNotice('Hãy chọn số từ hợp lệ trước khi bắt đầu.');
+      return;
+    }
     const next = makeSession(
       deck,
       onlyIds ? 'practice' : mode,
-      onlyIds?.length ??
-        Math.max(1, Math.min(count || 1, deck.questions.length)),
+      onlyIds?.length ?? count,
       random,
       onlyIds || mode !== 'test' ? 0 : Number(minutes),
       reverse,
@@ -503,7 +515,13 @@ export default function Home() {
                   <Pick
                     label="Cách học"
                     value={mode}
-                    onChange={(v) => setMode(v as Session['mode'])}
+                    onChange={(v) => {
+                      const nextMode = v as Session['mode'];
+                      setMode(nextMode);
+                      setCount((current) =>
+                        Math.min(current, availableStudyCount(deck, nextMode)),
+                      );
+                    }}
                     options={[
                       {
                         value: 'practice',
@@ -525,47 +543,49 @@ export default function Home() {
                     ? 'Tự do chuyển câu. Xem đáp án sau khi nộp bài.'
                     : 'Câu sai sẽ xuất hiện lại. Luyện đến khi đúng tất cả câu.'}
                 </p>
+                <label className="field">
+                  {mode === 'test'
+                    ? 'Số câu muốn kiểm tra'
+                    : 'Số từ muốn luyện'}
+                  <input
+                    type="number"
+                    min={1}
+                    max={availableCount}
+                    step={1}
+                    value={count || ''}
+                    aria-describedby="study-count-help"
+                    aria-invalid={!validCount}
+                    onChange={(e) =>
+                      setCount(
+                        e.target.value === '' ? 0 : Number(e.target.value),
+                      )
+                    }
+                  />
+                </label>
+                <p id="study-count-help" className="small muted">
+                  {availableCount
+                    ? `Nhập số nguyên từ 1 đến ${availableCount}.`
+                    : 'Bộ này chưa có câu phù hợp với cách học đã chọn.'}
+                </p>
                 <details className="practice-options">
                   <summary>Tùy chọn lượt học</summary>
-                  <div className="two-fields">
-                    <label className="field">
-                      Số câu
-                      <input
-                        type="number"
-                        min={1}
-                        max={deck.questions.length}
-                        value={count}
-                        onChange={(e) =>
-                          setCount(
-                            Math.max(
-                              1,
-                              Math.min(
-                                deck.questions.length,
-                                Number(e.target.value),
-                              ),
-                            ),
-                          )
-                        }
+                  {mode === 'test' ? (
+                    <div className="field">
+                      Thời gian
+                      <Pick
+                        label="Thời gian kiểm tra"
+                        value={minutes}
+                        onChange={setMinutes}
+                        options={[
+                          { value: '0', label: 'Không giới hạn' },
+                          { value: '5', label: '5 phút' },
+                          { value: '10', label: '10 phút' },
+                          { value: '20', label: '20 phút' },
+                          { value: '30', label: '30 phút' },
+                        ]}
                       />
-                    </label>
-                    {mode === 'test' ? (
-                      <div className="field">
-                        Thời gian
-                        <Pick
-                          label="Thời gian kiểm tra"
-                          value={minutes}
-                          onChange={setMinutes}
-                          options={[
-                            { value: '0', label: 'Không giới hạn' },
-                            { value: '5', label: '5 phút' },
-                            { value: '10', label: '10 phút' },
-                            { value: '20', label: '20 phút' },
-                            { value: '30', label: '30 phút' },
-                          ]}
-                        />
-                      </div>
-                    ) : null}
-                  </div>
+                    </div>
+                  ) : null}
                   <Toggle
                     checked={random}
                     onChange={setRandom}
@@ -587,6 +607,7 @@ export default function Home() {
                 </details>
                 <button
                   className="button primary start-button"
+                  disabled={!validCount}
                   onClick={() => start()}
                 >
                   <Play size={17} />

@@ -323,4 +323,70 @@ export async function featureJourney(page, check, snapshot) {
       expect((await stored()).sessions[0].mastery.attempts).toBe(2);
     },
   );
+  await check(
+    'visible word-count choice rejects invalid counts and practices exactly the chosen subset until all correct',
+    async () => {
+      await page.locator('button.brand').click();
+      await page
+        .locator('.deck-card')
+        .filter({ hasText: 'Fruits manual' })
+        .click();
+      const count = page.getByRole('spinbutton', {
+        name: 'Số từ muốn luyện',
+        exact: true,
+      });
+      const start = page.getByRole('button', {
+        name: 'Bắt đầu luyện tập',
+        exact: true,
+      });
+      await expect(count).toBeVisible();
+      await expect(page.locator('.practice-options')).not.toHaveAttribute(
+        'open',
+        '',
+      );
+      for (const invalid of ['', '0', '-1', '1.5', '4']) {
+        await count.fill(invalid);
+        await expect(start).toBeDisabled();
+      }
+      await count.fill('2');
+      await expect(start).toBeEnabled();
+      await snapshot('08-study-count');
+      const before = await stored();
+      await start.click();
+      const selected = (await stored()).sessions[0];
+      expect(selected.questions).toHaveLength(2);
+      const first = selected.questions[0];
+      await answer(first.choices.find((c) => !c.correct).text);
+      await page
+        .getByRole('button', { name: 'Câu tiếp theo', exact: true })
+        .click();
+      await expect(page.locator('.quiz-prompt')).toHaveText(
+        selected.questions[1].prompt,
+      );
+      await answer(selected.questions[1].choices.find((c) => c.correct).text);
+      await expect(
+        page.getByRole('button', { name: 'Hoàn thành lượt học', exact: true }),
+      ).not.toBeVisible();
+      await page
+        .getByRole('button', { name: 'Câu tiếp theo', exact: true })
+        .click();
+      await expect(page.locator('.quiz-prompt')).toHaveText(first.prompt);
+      await answer(first.choices.find((c) => c.correct).text);
+      await page
+        .getByRole('button', { name: 'Hoàn thành lượt học', exact: true })
+        .click();
+      await expect(
+        page.getByText('Đã luyện đúng 2 / 2 câu (100%).', { exact: true }),
+      ).toBeVisible();
+      const done = await stored();
+      expect(done.sessions[0].mastery.attempts).toBe(3);
+      const deck = done.decks.find((d) => d.id === selected.deckId);
+      const excluded = deck.questions.find(
+        (q) => !selected.questions.some((s) => s.id === q.id),
+      );
+      expect(done.reviews[deck.id + ':' + excluded.id]).toEqual(
+        before.reviews[deck.id + ':' + excluded.id],
+      );
+    },
+  );
 }
