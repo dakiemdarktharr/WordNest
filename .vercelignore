@@ -4,6 +4,8 @@
 .agents
 .codex
 .env*
+# Personal vocabulary files saved next to the source are not deployment inputs.
+/*.txt
 node_modules
 dist
 desktop
