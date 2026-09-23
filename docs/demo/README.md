@@ -1,5 +1,9 @@
 # WordNest demo screenshots
 
+## Version 0.3.1 practice update
+
+`07-practice-dark.png` is a real production-build browser capture from the current automated journey. A wrong first answer advances past the other two questions and is shown again; the final question must be answered correctly before the finish button appears. The fixture has three authored fruit pairs and five attempts, with a first-attempt score of 2/3. This measures scripted behavior, not learner outcomes. Older captures below document earlier versions.
+
 Captured from the real production web build by `npm run test:journey` on 2026-09-11. The screenshots show the Vietnamese interface at 1280 × 960. Input: `examples/wordnest-demo.txt`, four project-authored pairs, not student data.
 
 1. `01-import.png`: UTF-8 TXT preview with four recognized pairs.

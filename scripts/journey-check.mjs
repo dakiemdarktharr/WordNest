@@ -145,29 +145,31 @@ try {
   await page
     .getByRole('button', { name: 'WordNest demo', exact: true })
     .click();
+  await page.getByText('Tùy chọn lượt học', { exact: true }).click();
   await page.getByRole('switch', { name: 'Trộn thứ tự câu hỏi' }).uncheck();
   await page.getByRole('button', { name: 'Bắt đầu luyện tập' }).click();
-  const answers = ['kiên cường', 'kiên cường', 'chu đáo', 'nhất quán'];
-  for (let i = 0; i < 4; i++) {
+  const answers = ['kiên cường', 'kiên cường', 'chu đáo', 'nhất quán', 'tò mò'];
+  for (let i = 0; i < answers.length; i++) {
     await page
       .locator('.answer-option button')
       .filter({ has: page.getByText(answers[i], { exact: true }) })
       .click();
-    await page
-      .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
-      .click();
+    if (i === 1) {
+      await expect(page.locator('.quiz-prompt')).toHaveText('curious');
+      await expect(
+        page.getByRole('button', { name: 'Hoàn thành lượt học', exact: true }),
+      ).not.toBeVisible();
+    }
+    if (i === 4)
+      await expect(page.locator('.quiz-prompt')).toHaveText('curious');
     if (i === 0) await snapshot('03-quiz');
     await page
       .getByRole('button', {
-        name: i === 3 ? 'Nộp bài' : 'Câu tiếp theo',
+        name: i === 4 ? 'Hoàn thành lượt học' : 'Câu tiếp theo',
         exact: true,
       })
       .click();
   }
-  await page
-    .getByRole('alertdialog')
-    .getByRole('button', { name: 'Nộp bài', exact: true })
-    .click();
   await expect(
     page.getByText('3 / 4 câu đúng', { exact: false }),
   ).toBeVisible();

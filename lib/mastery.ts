@@ -1,15 +1,20 @@
 import {
   completeSession,
   grade,
+  gradeWritten,
   type Session,
   type StudyData,
 } from './learning.ts';
 
 /** First attempts remain the scoring/SRS evidence; retries only clear the queue. */
-export function answerMastery(session: Session, selected: string[]): Session {
+export function answerMastery(
+  session: Session,
+  selected: string[],
+  typed?: string,
+): Session {
   const state = session.mastery;
   if (
-    session.mode !== 'mastery' ||
+    session.mode === 'test' ||
     !state ||
     state.feedback ||
     session.finishedAt !== null ||
@@ -18,14 +23,20 @@ export function answerMastery(session: Session, selected: string[]): Session {
     return session;
   const question = session.questions[session.index];
   if (
-    !selected.length ||
+    (session.mode === 'write'
+      ? !typed?.trim() || selected.length !== 0
+      : !selected.length) ||
     new Set(selected).size !== selected.length ||
     selected.some((id) => !question.choices.some((c) => c.id === id))
   )
     return session;
   const answer = {
     selected: [...selected],
-    correct: grade(question, selected),
+    ...(session.mode === 'write' ? { typed } : {}),
+    correct:
+      session.mode === 'write'
+        ? gradeWritten(question, typed ?? '', session.reverse)
+        : grade(question, selected),
   };
   return {
     ...session,
@@ -45,14 +56,20 @@ export function advanceMastery(
   const state = session?.mastery;
   if (
     !session ||
-    session.mode !== 'mastery' ||
+    session.mode === 'test' ||
     !state?.feedback ||
     !state.queue.length ||
     session.finishedAt !== null
   )
     return data;
+  // Regrade before advancing: the stored boolean alone is not evidence.
+  const question = session.questions[session.index];
+  const correct =
+    session.mode === 'write'
+      ? gradeWritten(question, state.feedback.typed ?? '', session.reverse)
+      : grade(question, state.feedback.selected);
   const [current, ...rest] = state.queue;
-  const queue = state.feedback.correct ? rest : [...rest, current];
+  const queue = correct ? rest : [...rest, current];
   const next: Session = {
     ...session,
     index: queue.length

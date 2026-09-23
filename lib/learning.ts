@@ -287,7 +287,7 @@ export function makeSession(
     deadline: mode === 'test' && minutes ? now + minutes * 60_000 : null,
     finishedAt: null,
     reverse,
-    ...(mode === 'mastery'
+    ...(mode !== 'test'
       ? {
           mastery: {
             queue: chosen.map((q) => q.id),
@@ -311,7 +311,7 @@ export function completeSession(
 ): StudyData {
   const session = data.sessions.find((s) => s.id === sessionId);
   if (!session || session.finishedAt !== null) return data;
-  if (session.mode === 'mastery' && session.mastery?.queue.length !== 0)
+  if (session.mode !== 'test' && session.mastery?.queue.length !== 0)
     return data;
   const reviews = { ...data.reviews };
   const answers = { ...session.answers };

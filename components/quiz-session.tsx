@@ -23,7 +23,6 @@ import { Speak } from '@/components/controls';
 import {
   completeSession,
   grade,
-  gradeWritten,
   solution,
   type Deck,
   type Session,
@@ -45,7 +44,7 @@ export function QuizSession({
   onRetry: (ids: string[]) => void;
 }) {
   const q = session.questions[session.index];
-  const isMastery = session.mode === 'mastery';
+  const isMastery = session.mode !== 'test' && Boolean(session.mastery);
   const answer = isMastery ? session.mastery?.feedback : session.answers[q.id];
   const [selected, setSelected] = useState<string[]>(answer?.selected ?? []);
   const [typed, setTyped] = useState(answer?.typed ?? '');
@@ -54,6 +53,7 @@ export function QuizSession({
   const timerAttempt = useRef(false);
   const isTest = session.mode === 'test';
   const feedback = !isTest && Boolean(answer);
+  const locked = feedback;
   const multi = q.choices.filter((c) => c.correct).length > 1;
   const patch = useCallback(
     (next: Partial<Session>) => {
@@ -93,11 +93,11 @@ export function QuizSession({
         finish();
         return false;
       }
-      if (session.mode === 'mastery')
+      if (session.mode !== 'test')
         return update((d) => ({
           ...d,
           sessions: d.sessions.map((s) =>
-            s.id === session.id ? answerMastery(s, ids) : s,
+            s.id === session.id ? answerMastery(s, ids, text) : s,
           ),
         }));
       return patch({
@@ -106,10 +106,7 @@ export function QuizSession({
           [q.id]: {
             selected: ids,
             ...(text === undefined ? {} : { typed: text }),
-            correct:
-              session.mode === 'write'
-                ? gradeWritten(q, text ?? '', session.reverse)
-                : grade(q, ids),
+            correct: grade(q, ids),
           },
         },
       });
@@ -117,13 +114,13 @@ export function QuizSession({
     [session, q, finish, patch, update],
   );
   function choose(id: string) {
-    if (feedback) return;
+    if (locked) return;
     const next = multi
       ? selected.includes(id)
         ? selected.filter((v) => v !== id)
         : [...selected, id]
       : [id];
-    if (isTest && !record(next)) return;
+    if ((isTest || !multi) && !record(next)) return;
     setSelected(next);
   }
   const score = sessionScore(session);
@@ -150,6 +147,11 @@ export function QuizSession({
                 : 'Hoàn thành lượt học!'}
           </h1>
           <p className="muted">{deck.title}</p>
+          {isMastery && (
+            <p className="correct-text">
+              Đã luyện đúng {score.total} / {score.total} câu (100%).
+            </p>
+          )}
           <div className="result-score">
             {Math.round((score.correct / score.total) * 100)}
             <span>%</span>
@@ -280,19 +282,17 @@ export function QuizSession({
     <div className="study-page">
       <button className="text-button back-button" onClick={onBack}>
         <ArrowLeft size={17} />
-        Tạm nghỉ · bài đã xác nhận được lưu
+        Tạm nghỉ
       </button>
       <div className="page-heading">
         <div>
           <p className="eyebrow">{deck.title}</p>
           <h1>
-            {isMastery
-              ? 'Học đến khi đúng'
-              : session.mode === 'test'
-                ? 'Kiểm tra'
-                : session.mode === 'write'
-                  ? 'Luyện gõ từ vựng'
-                  : 'Luyện tập'}
+            {session.mode === 'test'
+              ? 'Kiểm tra'
+              : session.mode === 'write'
+                ? 'Luyện gõ từ vựng'
+                : 'Luyện tập'}
           </h1>
         </div>
         {session.deadline ? (
@@ -303,9 +303,7 @@ export function QuizSession({
             {Math.floor(remaining / 60)}:
             {String(remaining % 60).padStart(2, '0')}
           </span>
-        ) : (
-          <span className="score-chip">Không giới hạn thời gian</span>
-        )}
+        ) : null}
       </div>
       <div className="row-between progress-label">
         <span>
@@ -353,7 +351,7 @@ export function QuizSession({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (!feedback && typed.trim()) record([], typed);
+              if (!locked && typed.trim()) record([], typed);
             }}
           >
             <input
@@ -364,7 +362,7 @@ export function QuizSession({
               autoCapitalize="none"
               spellCheck={false}
               value={typed}
-              readOnly={feedback}
+              readOnly={locked}
               onChange={(e) => setTyped(e.target.value)}
               placeholder={
                 session.reverse ? 'Nhập từ tiếng Anh…' : 'Nhập nghĩa…'
@@ -374,7 +372,7 @@ export function QuizSession({
               Không phân biệt chữ hoa/thường. Dấu và dấu câu phải khớp với bộ
               từ.
             </p>
-            {!feedback && (
+            {!locked && (
               <button
                 className="button primary"
                 disabled={!typed.trim()}
@@ -395,7 +393,7 @@ export function QuizSession({
                   (feedback
                     ? c.correct
                       ? 'correct'
-                      : selected.includes(c.id)
+                      : answer?.selected.includes(c.id)
                         ? 'incorrect'
                         : ''
                     : '')
@@ -406,14 +404,14 @@ export function QuizSession({
                     <Checkbox
                       checked={selected.includes(c.id)}
                       onCheckedChange={() => choose(c.id)}
-                      disabled={feedback}
+                      disabled={locked}
                     />
                     <span>{c.text}</span>
                   </label>
                 ) : (
                   <button
                     aria-pressed={selected.includes(c.id)}
-                    disabled={feedback}
+                    disabled={locked}
                     onClick={() => choose(c.id)}
                   >
                     <span className="answer-letter">
@@ -435,7 +433,7 @@ export function QuizSession({
             <b>
               {answer?.correct
                 ? 'Chính xác, làm tốt lắm!'
-                : 'Chưa đúng — thêm một lần để nhớ.'}
+                : 'Chưa đúng — câu này sẽ xuất hiện lại.'}
             </b>
             {!answer?.correct && (
               <p>
@@ -449,7 +447,7 @@ export function QuizSession({
           </output>
         )}
         <div className="quiz-actions">
-          {!isMastery && (
+          {isTest && (
             <button
               className="button"
               disabled={session.index === 0}
@@ -459,7 +457,7 @@ export function QuizSession({
               Câu trước
             </button>
           )}
-          {!isTest && !feedback && session.mode !== 'write' && (
+          {!isTest && multi && !locked && session.mode !== 'write' && (
             <button
               className="button primary"
               disabled={!selected.length}
@@ -468,7 +466,7 @@ export function QuizSession({
               Kiểm tra đáp án
             </button>
           )}
-          {isMastery && feedback && (
+          {isMastery && locked && (
             <button
               className="button primary"
               onClick={() =>
@@ -477,12 +475,13 @@ export function QuizSession({
             >
               {session.mastery?.queue.length === 1 && answer?.correct
                 ? 'Hoàn thành lượt học'
-                : 'Tiếp tục luyện'}
+                : session.mastery?.queue.length === 1
+                  ? 'Thử lại câu này'
+                  : 'Câu tiếp theo'}
               <ArrowRight size={17} />
             </button>
           )}
-          {!isMastery &&
-            (isTest || feedback) &&
+          {isTest &&
             (session.index < session.questions.length - 1 ? (
               <button
                 className="button primary"
@@ -524,11 +523,9 @@ export function QuizSession({
         </div>
       )}
       <p className="small center muted">
-        {isMastery
-          ? 'Câu sai được đưa về cuối lượt. Có thể tạm nghỉ và tiếp tục bất cứ lúc nào.'
-          : isTest
-            ? 'Đáp án và giải thích sẽ hiện sau khi nộp bài.'
-            : 'Trả lời, đọc giải thích và tiếp tục theo nhịp của bạn.'}
+        {isTest
+          ? 'Đáp án và giải thích sẽ hiện sau khi nộp bài.'
+          : 'Câu sai sẽ xuất hiện lại. Hoàn thành khi đã trả lời đúng tất cả câu.'}
       </p>
       <AlertDialog open={confirm} onOpenChange={setConfirm}>
         <AlertDialogContent>

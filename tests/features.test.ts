@@ -22,12 +22,12 @@ const rows = [
   { term: 'pear', meaning: 'quả lê' },
   { term: 'grape', meaning: 'quả nho' },
 ];
-function fixture() {
+function fixture(mode: Session['mode'] = 'mastery') {
   const deck = createVocabularyDeck(' Fruits ', rows);
   return {
     ...emptyData(),
     decks: [deck],
-    sessions: [makeSession(deck, 'mastery', 3, false, 10, false)],
+    sessions: [makeSession(deck, mode, 3, false, 10, false)],
   };
 }
 function select(data: ReturnType<typeof fixture>, correct: boolean) {
@@ -68,41 +68,45 @@ await test('manual deck rejects missing fields, ambiguous TXT and limits without
     createVocabularyDeck('x', [{ term: 'x', meaning: 'ế'.repeat(340000) }]),
   );
 });
-await test('wrong answers return at end, single remaining wrong repeats until correct, score retains first attempt', () => {
-  let data = fixture();
-  const id = data.sessions[0].id;
-  assert.equal(data.sessions[0].deadline, null);
-  assert.equal(completeSession(data, id, 1000), data);
-  const original = structuredClone(data);
-  data = select(data, false);
-  assert.deepEqual(original.sessions[0].answers, {});
-  data = advanceMastery(data, id, 1000);
-  assert.deepEqual(data.sessions[0].mastery?.queue, ['q2', 'q3', 'q1']);
-  for (let i = 0; i < 2; i++)
+for (const mode of ['practice', 'mastery'] as const)
+  await test(`${mode}: wrong answers return later; finishing requires every question correct; first score and SRS retained`, () => {
+    let data = fixture(mode);
+    const id = data.sessions[0].id;
+    assert.equal(data.sessions[0].deadline, null);
+    assert.equal(completeSession(data, id, 1000), data);
+    const original = structuredClone(data);
+    data = select(data, false);
+    assert.deepEqual(original.sessions[0].answers, {});
+    data = advanceMastery(data, id, 1000);
+    assert.deepEqual(data.sessions[0].mastery?.queue, ['q2', 'q3', 'q1']);
+    assert.equal(data.sessions[0].index, 1);
+    for (let i = 0; i < 2; i++)
+      data = advanceMastery(select(data, true), id, 1000);
+    for (let i = 0; i < 8; i++) {
+      data = advanceMastery(select(data, false), id, 1000);
+      assert.equal(completeSession(data, id, 1000), data);
+      assert.equal(data.sessions[0].index, 0);
+      assert.deepEqual(data.sessions[0].mastery?.queue, ['q1']);
+      assert.equal(data.sessions[0].finishedAt, null);
+      assert.equal(data.sessions[0].mastery?.feedback, null);
+    }
     data = advanceMastery(select(data, true), id, 1000);
-  for (let i = 0; i < 8; i++) {
-    data = advanceMastery(select(data, false), id, 1000);
-    assert.deepEqual(data.sessions[0].mastery?.queue, ['q1']);
-    assert.equal(data.sessions[0].finishedAt, null);
-    assert.equal(data.sessions[0].mastery?.feedback, null);
-  }
-  data = advanceMastery(select(data, true), id, 1000);
-  assert.equal(data.sessions[0].finishedAt, 1000);
-  assert.deepEqual(data.sessions[0].mastery?.queue, []);
-  assert.equal(data.sessions[0].mastery?.attempts, 12);
-  assert.deepEqual(sessionScore(data.sessions[0]), { correct: 2, total: 3 });
-  assert.equal(data.reviews[data.decks[0].id + ':q1'].due, 61000);
-  assert.equal(data.reviews[data.decks[0].id + ':q2'].interval, 1);
-  assert.equal(advanceMastery(data, id, 5000), data);
-  assert.equal(completeSession(data, id, 5000), data);
-  assert.deepEqual(parseBackup(JSON.stringify(data)), data);
-});
+    assert.equal(data.sessions[0].finishedAt, 1000);
+    assert.deepEqual(data.sessions[0].mastery?.queue, []);
+    assert.equal(data.sessions[0].mastery?.attempts, 12);
+    assert.deepEqual(sessionScore(data.sessions[0]), { correct: 2, total: 3 });
+    assert.equal(data.reviews[data.decks[0].id + ':q1'].due, 61000);
+    assert.equal(data.reviews[data.decks[0].id + ':q2'].interval, 1);
+    assert.equal(advanceMastery(data, id, 5000), data);
+    assert.equal(completeSession(data, id, 5000), data);
+    assert.deepEqual(parseBackup(JSON.stringify(data)), data);
+  });
 await test('mastery ignores duplicate submits, empty and invalid choices; exact multi-answer grading', () => {
   const data = fixture();
   const s = data.sessions[0];
   assert.equal(answerMastery(s, []), s);
   assert.equal(answerMastery(s, ['invalid']), s);
-  const answered = select(data, false).sessions[0];
+  const answered = select(data, true).sessions[0];
   assert.equal(answerMastery(answered, ['1']), answered);
   assert.equal(advanceMastery(data, s.id, 0), data);
   const deck = createVocabularyDeck('x', rows);
@@ -197,5 +201,54 @@ await test('old backups remain valid and theme setting is independent of learnin
       },
     }),
     'light',
+  );
+});
+
+await test('unfinished legacy practice/write resumes at first wrong answer; finished history stays intact', () => {
+  for (const mode of ['practice', 'write'] as const) {
+    const data = fixture(mode);
+    const s = data.sessions[0];
+    delete s.mastery;
+    s.index = 2;
+    s.answers.q1 =
+      mode === 'write'
+        ? { selected: [], typed: 'quả táo', correct: true }
+        : { selected: ['1'], correct: true };
+    s.answers.q2 =
+      mode === 'write'
+        ? { selected: [], typed: 'wrong', correct: false }
+        : { selected: ['d0'], correct: false };
+    const loaded = parseBackup(JSON.stringify(data));
+    assert.equal(loaded.sessions[0].index, 1);
+    assert.deepEqual(loaded.sessions[0].mastery?.queue, ['q2', 'q3']);
+    assert.equal(completeSession(loaded, s.id, 1000), loaded);
+    assert.deepEqual(
+      advanceMastery(loaded, s.id, 1000).sessions[0].mastery?.queue,
+      ['q3', 'q2'],
+    );
+    assert.deepEqual(parseBackup(JSON.stringify(loaded)), loaded);
+    s.finishedAt = 1000;
+    assert.deepEqual(parseBackup(JSON.stringify(data)), data);
+  }
+});
+
+await test('wrong final answer cannot finish even with a forged correct flag; exam behavior remains separate', () => {
+  let data = fixture('practice');
+  const id = data.sessions[0].id;
+  for (let i = 0; i < 2; i++)
+    data = advanceMastery(select(data, true), id, 1000);
+  data = select(data, false);
+  assert.equal(advanceMastery(data, id, 1000).sessions[0].finishedAt, null);
+  assert.equal(completeSession(data, id, 1000), data);
+  data.sessions[0].mastery!.feedback!.correct = true;
+  assert.deepEqual(advanceMastery(data, id, 1000).sessions[0].mastery?.queue, [
+    'q3',
+  ]);
+  const exam = fixture('test');
+  assert.equal(answerMastery(exam.sessions[0], ['1']), exam.sessions[0]);
+  assert.equal(advanceMastery(exam, exam.sessions[0].id, 1000), exam);
+  assert.equal(
+    completeSession(exam, exam.sessions[0].id, 1000).sessions[0].finishedAt,
+    1000,
   );
 });

@@ -63,4 +63,4 @@ jobs:
             examples/wordnest-demo.txt \
             --repo "$GITHUB_REPOSITORY" \
             --title "WordNest ${GITHUB_REF_NAME#v} — desktop apps" \
-            --notes-file docs/RELEASE-0.3.0.md
+            --notes-file "docs/RELEASE-${GITHUB_REF_NAME#v}.md"

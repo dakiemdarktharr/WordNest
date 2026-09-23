@@ -86,21 +86,15 @@ export async function featureJourney(page, check, snapshot) {
         .click();
     },
   );
-  await page.getByRole('combobox', { name: 'Cách học', exact: true }).click();
-  await page
-    .getByRole('option', { name: 'Học đến khi đúng · lặp lại câu sai' })
-    .click();
+  await page.getByText('Tùy chọn lượt học', { exact: true }).click();
   await page.getByRole('switch', { name: 'Trộn thứ tự câu hỏi' }).uncheck();
   await page
-    .getByRole('button', { name: 'Bắt đầu học đến khi đúng', exact: true })
+    .getByRole('button', { name: 'Bắt đầu luyện tập', exact: true })
     .click();
   async function answer(text) {
     await page
       .locator('.answer-option button')
       .filter({ has: page.getByText(text, { exact: true }) })
-      .click();
-    await page
-      .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
       .click();
   }
   async function resume() {
@@ -112,7 +106,7 @@ export async function featureJourney(page, check, snapshot) {
     await page.getByRole('button', { name: 'Tiếp tục', exact: true }).click();
   }
   await check(
-    'mastery shows each answer, persists feedback and repeats only wrong questions',
+    'practice advances after mistakes, repeats wrong questions later and requires 100% completion',
     async () => {
       await answer('quả lê');
       await expect(page.locator('.feedback')).toContainText('Đáp án: quả táo');
@@ -125,19 +119,39 @@ export async function featureJourney(page, check, snapshot) {
       await resume();
       expect(await stored()).toEqual(pending);
       await expect(page.locator('.feedback')).toContainText('Đáp án: quả táo');
-      await page.getByRole('button', { name: 'Tiếp tục luyện' }).click();
+      await expect(
+        page.getByRole('button', { name: 'Câu trước', exact: true }),
+      ).not.toBeVisible();
+      await page
+        .getByRole('button', { name: 'Câu tiếp theo', exact: true })
+        .click();
       await expect(page.locator('.quiz-prompt')).toHaveText('pear');
       await answer('quả lê');
-      await page.getByRole('button', { name: 'Tiếp tục luyện' }).click();
+      await page
+        .getByRole('button', { name: 'Câu tiếp theo', exact: true })
+        .click();
       await expect(page.locator('.quiz-prompt')).toHaveText('grape');
       await answer('quả nho');
-      await page.getByRole('button', { name: 'Tiếp tục luyện' }).click();
+      await expect(
+        page.getByRole('button', { name: 'Hoàn thành lượt học', exact: true }),
+      ).not.toBeVisible();
+      await page
+        .getByRole('button', { name: 'Câu tiếp theo', exact: true })
+        .click();
       await expect(page.locator('.quiz-prompt')).toHaveText('apple');
       await answer('quả nho');
-      await page.getByRole('button', { name: 'Tiếp tục luyện' }).click();
-      await expect(page.locator('.feedback')).not.toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Câu tiếp theo', exact: true }),
+      ).not.toBeVisible();
       await resume();
       await expect(page.locator('.quiz-prompt')).toHaveText('apple');
+      await expect(page.locator('.feedback')).toContainText('Đáp án: quả táo');
+      await expect(
+        page.getByRole('button', { name: 'Hoàn thành lượt học', exact: true }),
+      ).not.toBeVisible();
+      await page
+        .getByRole('button', { name: 'Thử lại câu này', exact: true })
+        .click();
       await expect(page.locator('.feedback')).not.toBeVisible();
       await answer('quả táo');
       expect(
@@ -145,7 +159,7 @@ export async function featureJourney(page, check, snapshot) {
           .locator('.answer-option.correct')
           .evaluate((el) => getComputedStyle(el).backgroundColor),
       ).toBe('rgb(25, 62, 52)');
-      await snapshot('07-mastery-dark');
+      await snapshot('07-practice-dark');
       await page
         .getByRole('button', { name: 'Hoàn thành lượt học', exact: true })
         .click();
@@ -174,6 +188,139 @@ export async function featureJourney(page, check, snapshot) {
         page.getByRole('button', { name: 'Chuyển sang giao diện tối' }),
       ).toBeVisible();
       expect(await stored()).toEqual(done);
+    },
+  );
+  await check(
+    'writing repeats mistakes after other questions and cannot finish early, including after reload',
+    async () => {
+      await page
+        .locator('.deck-card')
+        .filter({ hasText: 'Fruits manual' })
+        .click();
+      await page
+        .getByRole('combobox', { name: 'Cách học', exact: true })
+        .click();
+      await page
+        .getByRole('option', { name: 'Luyện gõ · nhớ và viết lại từ' })
+        .click();
+      await page.getByText('Tùy chọn lượt học', { exact: true }).click();
+      await page.getByRole('switch', { name: 'Trộn thứ tự câu hỏi' }).uncheck();
+      await page
+        .getByRole('button', { name: 'Bắt đầu luyện gõ', exact: true })
+        .click();
+      for (const [i, word] of [
+        'wrong',
+        'pear',
+        'wrong',
+        'apple',
+        'grape',
+      ].entries()) {
+        expect((await stored()).sessions[0].index).toBe([0, 1, 2, 0, 2][i]);
+        await page
+          .getByRole('textbox', { name: 'Câu trả lời', exact: true })
+          .fill(word);
+        await page
+          .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
+          .click();
+        if (i === 0) await resume();
+        if (i < 4) {
+          await expect(
+            page.getByRole('button', {
+              name: 'Hoàn thành lượt học',
+              exact: true,
+            }),
+          ).not.toBeVisible();
+          expect((await stored()).sessions[0].finishedAt).toBeNull();
+        }
+        await page
+          .getByRole('button', {
+            name: i === 4 ? 'Hoàn thành lượt học' : 'Câu tiếp theo',
+            exact: true,
+          })
+          .click();
+      }
+      const done = await stored();
+      expect(done.sessions[0].mastery.attempts).toBe(5);
+      expect(
+        Object.values(done.sessions[0].answers).filter((a) => a.correct),
+      ).toHaveLength(1);
+      expect(done.sessions[0].finishedAt).not.toBeNull();
+    },
+  );
+  await check(
+    'multiple-choice retry requires the exact answer set; failed save cannot unlock the next question',
+    async () => {
+      await page.locator('button.brand').click();
+      await page
+        .getByRole('button', { name: 'Nhập file TXT', exact: true })
+        .click();
+      const importer = page.getByRole('dialog');
+      await importer.locator('input[type=file]').setInputFiles({
+        name: 'Multiple answers.txt',
+        mimeType: 'text/plain',
+        buffer: Buffer.from(
+          '1. Pick two fruits [1*] apple [2*] pear [3] chair',
+        ),
+      });
+      await importer.getByRole('button', { name: 'Tạo bộ học' }).click();
+      await page
+        .getByRole('button', { name: 'Bắt đầu luyện tập', exact: true })
+        .click();
+      await page.getByRole('checkbox', { name: 'apple', exact: true }).check();
+      await page
+        .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
+        .click();
+      await expect(page.locator('.feedback')).toContainText('Chưa đúng');
+      await expect(
+        page.getByRole('button', { name: 'Hoàn thành lượt học', exact: true }),
+      ).not.toBeVisible();
+      await page
+        .getByRole('button', { name: 'Thử lại câu này', exact: true })
+        .click();
+      const before = await stored();
+      await page.getByRole('checkbox', { name: 'apple', exact: true }).check();
+      await page.getByRole('checkbox', { name: 'pear', exact: true }).check();
+      await page.evaluate(() => {
+        window.wordnestStorageDescriptor = Object.getOwnPropertyDescriptor(
+          Storage.prototype,
+          'setItem',
+        );
+        Storage.prototype.setItem = () => {
+          throw new DOMException('quota', 'QuotaExceededError');
+        };
+      });
+      try {
+        await page
+          .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
+          .click();
+        await expect(
+          page.getByText('Chưa lưu thay đổi.', { exact: false }),
+        ).toBeVisible();
+        await expect(
+          page.getByRole('button', {
+            name: 'Hoàn thành lượt học',
+            exact: true,
+          }),
+        ).not.toBeVisible();
+        expect(await stored()).toEqual(before);
+      } finally {
+        await page.evaluate(() => {
+          Object.defineProperty(
+            Storage.prototype,
+            'setItem',
+            window.wordnestStorageDescriptor,
+          );
+          delete window.wordnestStorageDescriptor;
+        });
+      }
+      await page
+        .getByRole('button', { name: 'Kiểm tra đáp án', exact: true })
+        .click();
+      await page
+        .getByRole('button', { name: 'Hoàn thành lượt học', exact: true })
+        .click();
+      expect((await stored()).sessions[0].finishedAt).not.toBeNull();
+      expect((await stored()).sessions[0].mastery.attempts).toBe(2);
     },
   );
 }

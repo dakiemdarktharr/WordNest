@@ -108,7 +108,10 @@ export function parseBackup(raw: string): StudyData {
       typeof s.reverse !== 'boolean'
     )
       throw new Error('Phiên học trong bản sao lưu không hợp lệ.');
-    if (s.mode === 'mastery') {
+    if (
+      s.mode === 'mastery' ||
+      (s.mode !== 'test' && s.mastery !== undefined)
+    ) {
       const m = s.mastery;
       const questions = s.questions;
       const answers = s.answers;
@@ -138,7 +141,9 @@ export function parseBackup(raw: string): StudyData {
           !m.queue.length ||
           !obj(a) ||
           !Array.isArray(a.selected) ||
-          !a.selected.length ||
+          (s.mode === 'write'
+            ? !str(a.typed) || !a.typed.trim() || a.selected.length !== 0
+            : !a.selected.length) ||
           new Set(a.selected).size !== a.selected.length ||
           a.selected.some(
             (choice) => !q.choices.some((c) => c.id === choice),
@@ -148,7 +153,10 @@ export function parseBackup(raw: string): StudyData {
           m.attempts < 1
         )
           throw new Error('Phản hồi lượt luyện không hợp lệ.');
-        a.correct = grade(q, a.selected);
+        a.correct =
+          s.mode === 'write'
+            ? gradeWritten(q, String(a.typed), s.reverse)
+            : grade(q, a.selected);
       }
     } else if (s.mastery !== undefined) {
       throw new Error('Hàng đợi không thuộc chế độ học này.');
@@ -177,7 +185,34 @@ export function parseBackup(raw: string): StudyData {
           : grade(q, a.selected);
     }
   }
-  return data as StudyData;
+  const validated = data as StudyData;
+  // Upgrade unfinished pre-0.3.1 practice sessions without changing their first
+  // answers or completed history. Start at the first wrong/unanswered question.
+  validated.sessions = validated.sessions.map((s) => {
+    if (s.mode === 'test' || s.finishedAt !== null || s.mastery) return s;
+    const pending = s.questions.filter((q) => !s.answers[q.id]?.correct);
+    const queue = (pending.length ? pending : s.questions.slice(-1)).map(
+      (q) => q.id,
+    );
+    const index = s.questions.findIndex((q) => q.id === queue[0]);
+    return {
+      ...s,
+      index,
+      deadline: null,
+      mastery: {
+        queue,
+        attempts: Object.keys(s.answers).length,
+        feedback: (
+          s.mode === 'write'
+            ? s.answers[queue[0]]?.typed?.trim()
+            : s.answers[queue[0]]?.selected.length
+        )
+          ? s.answers[queue[0]]
+          : null,
+      },
+    };
+  });
+  return validated;
 }
 export function loadData(storage: Pick<Storage, 'getItem'>) {
   const raw = storage.getItem(STORAGE_KEY);

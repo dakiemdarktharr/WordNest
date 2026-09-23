@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { answerMastery, advanceMastery } from '../lib/mastery.ts';
 import {
   parseTxt,
   emptyData,
@@ -87,15 +88,35 @@ void test('submission is idempotent, including a finished timestamp of zero', ()
   assert.equal(completeSession(d, 'missing', now), d);
 });
 void test('written quizzes use text grading for review schedules', () => {
-  const d = fixture('write');
-  d.sessions[0].answers.q1 = {
-    selected: [],
-    typed: ' RESILIENT ',
-    correct: false,
-  };
-  const next = completeSession(d, d.sessions[0].id, now);
+  let next = fixture('write');
+  const id = next.sessions[0].id;
+  for (let i = 0; i < 3; i++) {
+    let s = next.sessions[0];
+    if (i > 0) {
+      s = answerMastery(s, [], 'wrong');
+      next = { ...next, sessions: [s] };
+      assert.equal(completeSession(next, id, now), next);
+      assert.deepEqual(parseBackup(JSON.stringify(next)), next);
+      next = advanceMastery(next, id, now);
+      continue;
+    }
+    s = answerMastery(
+      s,
+      [],
+      ' ' + s.questions[s.index].prompt.toUpperCase() + ' ',
+    );
+    next = advanceMastery({ ...next, sessions: [s] }, id, now);
+  }
+  assert.deepEqual(next.sessions[0].mastery?.queue, ['q2', 'q3']);
+  while (next.sessions[0].finishedAt === null) {
+    const s = next.sessions[0];
+    const answered = answerMastery(s, [], s.questions[s.index].prompt);
+    next = advanceMastery({ ...next, sessions: [answered] }, id, now);
+  }
   assert.equal(next.reviews['words:q1'].interval, 1);
   assert.deepEqual(sessionScore(next.sessions[0]), { correct: 1, total: 3 });
+  assert.equal(next.sessions[0].mastery?.attempts, 5);
+  assert.deepEqual(parseBackup(JSON.stringify(next)), next);
 });
 void test('reviewing one quiz preserves other decks and unrelated reviews', () => {
   const d = fixture();

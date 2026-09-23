@@ -63,7 +63,7 @@ import {
 } from '@/lib/storage';
 
 const modeNames = {
-  mastery: 'Học đến khi đúng',
+  mastery: 'Luyện tập',
   practice: 'Luyện tập',
   test: 'Kiểm tra',
   write: 'Luyện gõ',
@@ -506,12 +506,8 @@ export default function Home() {
                     onChange={(v) => setMode(v as Session['mode'])}
                     options={[
                       {
-                        value: 'mastery',
-                        label: 'Học đến khi đúng · lặp lại câu sai',
-                      },
-                      {
                         value: 'practice',
-                        label: 'Luyện tập · hiện đáp án từng câu',
+                        label: 'Luyện tập · chọn đáp án',
                       },
                       {
                         value: 'test',
@@ -524,73 +520,71 @@ export default function Home() {
                     ]}
                   />
                 </div>
-                <div className="two-fields">
-                  <label className="field">
-                    Số câu
-                    <input
-                      type="number"
-                      min={1}
-                      max={deck.questions.length}
-                      value={count}
-                      onChange={(e) =>
-                        setCount(
-                          Math.max(
-                            1,
-                            Math.min(
-                              deck.questions.length,
-                              Number(e.target.value),
+                <p className="small muted">
+                  {mode === 'test'
+                    ? 'Tự do chuyển câu. Xem đáp án sau khi nộp bài.'
+                    : 'Câu sai sẽ xuất hiện lại. Luyện đến khi đúng tất cả câu.'}
+                </p>
+                <details className="practice-options">
+                  <summary>Tùy chọn lượt học</summary>
+                  <div className="two-fields">
+                    <label className="field">
+                      Số câu
+                      <input
+                        type="number"
+                        min={1}
+                        max={deck.questions.length}
+                        value={count}
+                        onChange={(e) =>
+                          setCount(
+                            Math.max(
+                              1,
+                              Math.min(
+                                deck.questions.length,
+                                Number(e.target.value),
+                              ),
                             ),
-                          ),
-                        )
-                      }
-                    />
-                  </label>
-                  {mode === 'test' ? (
-                    <div className="field">
-                      Thời gian
-                      <Pick
-                        label="Thời gian kiểm tra"
-                        value={minutes}
-                        onChange={setMinutes}
-                        options={[
-                          { value: '0', label: 'Không giới hạn' },
-                          { value: '5', label: '5 phút' },
-                          { value: '10', label: '10 phút' },
-                          { value: '20', label: '20 phút' },
-                          { value: '30', label: '30 phút' },
-                        ]}
+                          )
+                        }
                       />
-                    </div>
-                  ) : (
-                    <div className="setting-note">
-                      Tập trung vào độ chính xác, học theo nhịp của bạn.
-                    </div>
+                    </label>
+                    {mode === 'test' ? (
+                      <div className="field">
+                        Thời gian
+                        <Pick
+                          label="Thời gian kiểm tra"
+                          value={minutes}
+                          onChange={setMinutes}
+                          options={[
+                            { value: '0', label: 'Không giới hạn' },
+                            { value: '5', label: '5 phút' },
+                            { value: '10', label: '10 phút' },
+                            { value: '20', label: '20 phút' },
+                            { value: '30', label: '30 phút' },
+                          ]}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                  <Toggle
+                    checked={random}
+                    onChange={setRandom}
+                    label="Trộn thứ tự câu hỏi"
+                  />
+                  {mode === 'write' && (
+                    <>
+                      <Toggle
+                        checked={reverse}
+                        onChange={setReverse}
+                        label="Hiện nghĩa → gõ từ tiếng Anh"
+                      />
+                      <p className="small muted">
+                        Dùng câu có một đáp án đúng. So khớp nội dung trong TXT,
+                        bỏ qua hoa/thường và khoảng trắng thừa.
+                      </p>
+                    </>
                   )}
-                </div>
-                <Toggle
-                  checked={random}
-                  onChange={setRandom}
-                  label="Trộn thứ tự câu hỏi"
-                />
-                {mode === 'mastery' && (
-                  <p className="small muted">
-                    Hiện đáp án sau mỗi câu. Câu sai trở lại cuối lượt đến khi
-                    bạn chọn đúng. Điểm và lịch ôn dựa trên lần trả lời đầu.
-                  </p>
-                )}
-                {mode === 'write' && (
-                  <>
-                    <Toggle
-                      checked={reverse}
-                      onChange={setReverse}
-                      label="Hiện nghĩa → gõ từ tiếng Anh"
-                    />
-                    <p className="small muted">
-                      Dùng câu có một đáp án đúng. So khớp nội dung trong TXT,
-                      bỏ qua hoa/thường và khoảng trắng thừa.
-                    </p>
-                  </>
-                )}
+                </details>
                 <button
                   className="button primary start-button"
                   onClick={() => start()}

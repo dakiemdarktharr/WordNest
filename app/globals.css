@@ -865,6 +865,17 @@ small {
 .setup-panel h2 {
   margin: 16px 0 6px;
 }
+.practice-options > summary {
+  cursor: pointer;
+  padding: 8px 0;
+  font-weight: 600;
+}
+.practice-options[open] > summary {
+  margin-bottom: 12px;
+}
+.practice-options > .toggle-row {
+  margin-top: 12px;
+}
 .setup-fields {
   display: flex;
   flex-direction: column;

@@ -8,15 +8,24 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 ## Install the desktop app
 
-**For learners: [download WordNest 0.3.0](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
+**For learners: [download the latest WordNest desktop release](https://github.com/dakiemdarktharr/WordNest/releases/latest)** and install the matching desktop package. Windows users run the `.exe`; macOS users open the `.dmg` and drag WordNest to Applications. No Node.js, terminal, browser or localhost server is needed to use the installed app. Supported targets are Windows 10/11 x64 and macOS Intel/Apple Silicon.
 
 [Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/quizziz_clone/releases/tag/v0.3.0)
 
-## New in 0.3.0
+## New in 0.3.1
+
+- **Practice finishes only after every selected question has been answered correctly.** A wrong answer still allows moving to the next question, but is queued again after the remaining questions. The last wrong question repeats until correct. This applies to multiple-choice practice and writing.
+- **Simpler study UI:** one click grades a single-answer question; multi-answer questions and writing retain an explicit check button. Three modes (practice, writing, test) replace overlapping practice choices. Count, shuffle, timer and writing direction are under **Tùy chọn lượt học**.
+- **Honest results:** completion shows 100% of questions cleared, separately from the first-attempt score used by spaced repetition. Saving failed progress never unlocks completion. Pending queues survive restart; unfinished legacy practice is upgraded without rewriting completed history.
+- **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.1 or later.
+
+Validation: 40 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 16 browser journey groups cover wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.1 release notes](docs/RELEASE-0.3.1.md).
+
+## Included features
 
 - **Create a deck inside the app:** choose **Tạo bộ từ**, enter a title and word/meaning rows, then **Lưu bộ từ**. The same parser creates exportable TXT and flashcards/quiz content.
 - **Light/dark mode:** use the top-right theme button. The initial theme follows the OS; an explicit selection persists locally and also styles dialogs and menus.
-- **Learn until correct:** choose **Học đến khi đúng · lặp lại câu sai** in the study-mode menu. Each confirmed answer displays feedback; incorrect questions return to the end of the queue until answered correctly. The queue and current feedback survive closing the app.
+- **Learn until correct:** choose **Luyện tập** or **Luyện gõ**. Each answer displays feedback; incorrect questions return to the end of the queue until answered correctly. The queue and current feedback survive closing the app.
 - **Honest progress:** the result score and spaced-repetition updates use first attempts. Subsequent corrections complete the practice queue without inflating recall scores. Scheduling applies once when all questions are cleared.
 
 The shared React workflow runs in both desktop packages. Windows release checks launch the installed EXE; fresh native ARM64 and Intel Mac CI machines verify and launch both DMG/ZIP apps. Release publication depends on these checks. See [release details](docs/RELEASE-0.3.0.md).
@@ -37,13 +46,13 @@ These are actual screenshots of the production web build, captured by the automa
 
 [Full quiz result screenshot](docs/demo/04-results.png) · [Demo details and provenance](docs/demo/README.md)
 
-### New workflow screenshots (0.3.0)
+### Practice workflow (0.3.1)
 
 Actual production web captures from the scripted three-word fixture; desktop behavior is checked separately.
 
 | Create a deck in dark mode | Retry until correct |
 | --- | --- |
-| ![Create a vocabulary deck](docs/demo/06-create-dark.png) | ![Mastery feedback](docs/demo/07-mastery-dark.png) |
+| ![Create a vocabulary deck](docs/demo/06-create-dark.png) | ![Practice feedback and completion gate](docs/demo/07-practice-dark.png) |
 
 ## Architecture
 
@@ -118,8 +127,8 @@ This builds the UI and opens Electron. No development web server is needed by th
 
 1. Choose **Nhập file TXT**, select `examples/wordnest-demo.txt`, and choose **Tạo bộ học**. The file contains four English/Vietnamese pairs.
 2. Open **Flashcard**, flip `resilient`, then choose **Đã nhớ**. Its first review is scheduled one day later.
-3. Return to the deck, turn off **Trộn thứ tự câu hỏi**, and choose **Bắt đầu luyện tập**. Answer `resilient` correctly, intentionally answer `curious` incorrectly, and answer the last two words correctly.
-4. Submit the quiz. Expect **3/4**, or **75%**. The already-rated `resilient` moves from a one-day interval to two days; `curious` is scheduled one minute after submission.
+3. Return to the deck, expand **Tùy chọn lượt học**, turn off **Trộn thứ tự câu hỏi**, and choose **Bắt đầu luyện tập**. Answer `resilient` correctly, intentionally answer `curious` incorrectly, then advance and answer the last two words correctly.
+4. `curious` appears again. Correct it, then choose **Hoàn thành lượt học**. Expect **100% cleared** and a separate first-attempt score of **3/4 (75%)**. The already-rated `resilient` moves from a one-day interval to two days; `curious` is scheduled one minute after completion.
 5. Open **Tiến độ học**. Reload or reopen the app: the completed quiz and review dates remain. **Xuất sao lưu** exports JSON for moving to another device.
 
 Quiz option positions are shuffled; choose by answer text. Quiz submission applies **Good** to correct answers and **Again** to wrong/unanswered questions, exactly once per completed session. Previously completed sessions are not reprocessed when upgrading.
