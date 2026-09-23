@@ -73,6 +73,16 @@ flowchart LR
 
 No backend, API key, account, cloud synchronization, or external content service is needed for the desktop study workflow.
 
+## Host the web app on Vercel
+
+**Live web app: [wordnest-eta.vercel.app](https://wordnest-eta.vercel.app).** Deployed and verified on 2026-09-23: all 14 production-browser journey groups passed on the public URL. [Deployment evidence](docs/evidence/vercel-2026-09-23.json).
+
+Import this repository into Vercel with **Vite**, root directory **`.`**, Node.js **24.x**, and production branch **`codex/wordnest`**. `vercel.json` installs dependencies without downloading the desktop Electron runtime, runs `npm run build`, and publishes `dist/`. No backend, database or API keys are required. CLI deployment is also supported with `npx vercel@59.25.4 deploy --prod` after login and project linking.
+
+See [the Vietnamese Vercel guide](docs/VERCEL.vi.md) for exact steps and verification. Learning data remains in each browser; it does not synchronize with the desktop app or other domains. Transfer it with JSON backups. The web app needs a connection to open/reload; desktop installers remain available separately.
+
+The current Vercel project was deployed by CLI. GitHub linking was not authorized successfully, so Git pushes do **not** currently update the website automatically. Connect the repository in Vercel to enable that, or redeploy with the CLI command in the guide.
+
 ## Development setup and run
 
 Prerequisites for development: **Node.js 24**, npm, and Git. Desktop packages target Windows x64 and macOS Intel/Apple Silicon. Install dependencies once with internet access:

@@ -1,0 +1,20 @@
+# Only source needed by the Vite web build belongs in a CLI upload.
+.git
+.openai
+.agents
+.codex
+.env*
+node_modules
+dist
+desktop
+desktop-app
+release
+outputs
+work
+docs
+tests
+test-results
+playwright-report
+coverage
+build-resources
+*.tsbuildinfo

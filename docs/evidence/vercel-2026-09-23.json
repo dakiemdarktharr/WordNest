@@ -1,0 +1,58 @@
+{
+  "verifiedAt": "2026-09-23T13:17:52.798Z",
+  "publicUrl": "https://wordnest-eta.vercel.app",
+  "deploymentId": "dpl_Gqkn87BLJjxhis7cEibRZFi5DYFf",
+  "deploymentUrl": "https://wordnest-ovwic45zn-acne-a6cd.vercel.app",
+  "deploymentState": "READY",
+  "sourceBaseCommit": "eac5dfaf14b82d8cffdb71ef05588fb36f741693",
+  "changes": "Vercel deployment configuration and documentation only; desktop/runtime application code unchanged.",
+  "http": {
+    "publicRoot": 200,
+    "missingAsset": 404,
+    "requiresVercelLogin": false
+  },
+  "localValidation": {
+    "logicAndPersistenceTests": 37,
+    "desktopAndSpeechTests": 6,
+    "lint": "passed",
+    "productionBuild": "passed"
+  },
+  "liveJourney": {
+    "verifiedAt": "2026-09-23T13:17:52.798Z",
+    "platform": "153.0.4234.48",
+    "fixture": "examples/wordnest-demo.txt (4 authored pairs; not learner data)",
+    "checks": [
+      "explicit offline behavior",
+      "invalid UTF-8 is rejected visibly",
+      "malformed TXT cannot be committed",
+      "imports four vocabulary pairs",
+      "flashcard schedules first review in one day",
+      "quiz grades 3/4 and updates the same review schedule",
+      "reload preserves completed quiz and review dates exactly",
+      "light/dark theme applies to app and dialogs and survives reload",
+      "create vocabulary manually validates rows and persists an additional deck",
+      "mastery shows each answer, persists feedback and repeats only wrong questions",
+      "corrupt storage shows recovery guidance and preserves original bytes",
+      "failed writes do not report a successful import",
+      "theme write failure is visible without blocking study",
+      "failed manual deck save keeps form contents and does not add a deck"
+    ],
+    "errors": [],
+    "readyMs": 2335,
+    "elapsedMs": 12123,
+    "score": {
+      "correct": 3,
+      "total": 4
+    },
+    "intervalsDays": {
+      "resilient": 2,
+      "curious": 0.0006944444444444445
+    }
+  },
+  "gitIntegration": "Connection was attempted by Vercel CLI but failed; Git pushes do not currently auto-deploy. Production was deployed by CLI.",
+  "limitations": [
+    "Progress is browser-local and separate from desktop/other domains",
+    "Web cold-start/reload requires a network connection",
+    "Browser text-to-speech voices depend on device/browser"
+  ]
+}
