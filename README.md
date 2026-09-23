@@ -12,14 +12,14 @@ WordNest is an original product for an English teacher who distributes vocabular
 
 [Hướng dẫn tải, cài đặt và học bằng TXT bằng tiếng Việt](docs/INSTALL.vi.md) · [Release and installer assets](https://github.com/dakiemdarktharr/WordNest/releases/latest)
 
-## New in 0.3.2
+## New in 0.3.3
 
 - **Practice finishes only after every selected question has been answered correctly.** A wrong answer still allows moving to the next question, but is queued again after the remaining questions. The last wrong question repeats until correct. This applies to multiple-choice practice and writing.
 - **Simpler study UI:** one click grades a single-answer question; multi-answer questions and writing retain an explicit check button. Three modes (practice, writing, test) replace overlapping practice choices. Count, shuffle, timer and writing direction are under **Tùy chọn lượt học**.
 - **Honest results:** completion shows 100% of questions cleared, separately from the first-attempt score used by spaced repetition. Saving failed progress never unlocks completion. Pending queues survive restart; unfinished legacy practice is upgraded without rewriting completed history.
-- **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.2 or later.
+- **Test mode remains an exam:** free navigation and submission, without mandatory retries. Backups containing new practice queues require version 0.3.3 or later.
 
-Validation: 40 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 16 browser journey groups cover wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.2 release notes](docs/RELEASE-0.3.2.md).
+Validation: 40 logic tests, 6 desktop security/speech tests, lint and production build pass locally; 16 browser journey groups cover wrong-answer rotation, writing, multiple answers, persistence, quota failures and the original TXT → flashcard → quiz → SRS flow. Native release checks run on Windows and both Mac architectures before installer publication. See [0.3.3 release notes](docs/RELEASE-0.3.3.md).
 
 ## Included features
 
@@ -46,7 +46,7 @@ These are actual screenshots of the production web build, captured by the automa
 
 [Full quiz result screenshot](docs/demo/04-results.png) · [Demo details and provenance](docs/demo/README.md)
 
-### Practice workflow (0.3.2)
+### Practice workflow (0.3.3)
 
 Actual production web captures from the scripted three-word fixture; desktop behavior is checked separately.
 
@@ -74,6 +74,7 @@ flowchart LR
 | --- | --- |
 | Web entry | `index.html` → `app/main.tsx` → `app/page.tsx`; React, TypeScript, Vite |
 | Study rules | `lib/learning.ts`: TXT parsing, quiz generation/scoring, scheduling, idempotent quiz submission |
+| Practice completion | `lib/mastery.ts`: shared practice/writing retry queue; wrong answers rotate, correct answers leave, and only an empty queue can finish; `lib/storage.ts` upgrades unfinished legacy sessions |
 | Persistence | `lib/storage.ts` validates imported state; `components/use-study-data.ts` commits UI state only after a successful localStorage write |
 | UI | Existing flashcard, quiz, writing and matching components; shared controls and error messages |
 | Desktop entry | `desktop/main.mjs` serves bundled assets at `wordnest://app/`; sandboxed renderer, context isolation, no renderer Node access |
@@ -215,13 +216,13 @@ All future user-facing changes must keep shared renderer behavior working on Win
 
 ## Release and installation
 
-The source version in this branch is **0.3.2**. Build the Windows installer with:
+The source version in this branch is **0.3.3**. Build the Windows installer with:
 
 ```powershell
 npm ci
 npm run desktop:dist
-& '.\release\WordNest-Setup-0.3.2-x64.exe'
-Get-FileHash '.\release\WordNest-Setup-0.3.2-x64.exe' -Algorithm SHA256
+& '.\release\WordNest-Setup-0.3.3-x64.exe'
+Get-FileHash '.\release\WordNest-Setup-0.3.3-x64.exe' -Algorithm SHA256
 ```
 
 Choose an installation directory, then open **WordNest** from Desktop or Start Menu. End users need neither Node.js nor a web browser. Uninstall from **Windows Settings → Apps → WordNest**.

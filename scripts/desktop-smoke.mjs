@@ -95,7 +95,9 @@ try {
   );
   expect(stored.decks).toHaveLength(1);
   expect(Object.values(stored.sessions[0].answers)[0].correct).toBe(true);
-  await page.screenshot({ path: path.join(output, 'quiz.png') });
+  // --wordnest-smoke deliberately hides the native window. Its compositor
+  // may never produce a screenshot frame on Windows CI. Verify DOM/storage
+  // here; the browser journey captures the same renderer for documentation.
   await app.close();
   active = undefined;
   ({ app, page } = await launch());
